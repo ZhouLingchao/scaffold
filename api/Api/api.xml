@@ -1,0 +1,270 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Api</name>
+    </assembly>
+    <members>
+        <member name="T:Api.AppSettings.AppOption">
+            <summary>
+            对应appsettings.json配置文件中AppOption字段
+            </summary>
+        </member>
+        <member name="P:Api.AppSettings.AppOption.Configuration">
+            <summary>
+            连接到数据库的配置信息
+            </summary>
+        </member>
+        <member name="P:Api.AppSettings.AppOption.Version">
+            <summary>
+            版本号，提供默认版本号为1.0.0
+            </summary>
+        </member>
+        <member name="P:Api.AppSettings.AppOption.SwaggerJsonUrl">
+            <summary>
+            Swagger的json地址
+            </summary>
+        </member>
+        <member name="T:Api.AppSettings.RedisOption">
+            <summary>
+            redis配置项
+            </summary>
+        </member>
+        <member name="P:Api.AppSettings.RedisOption.Configuration">
+            <summary>
+            连接到redis服务器的配置信息
+            </summary>
+        </member>
+        <member name="P:Api.AppSettings.RedisOption.InstanceName">
+            <summary>
+            实例名称
+            </summary>
+        </member>
+        <member name="T:Api.Controllers.EnvController">
+            <summary>
+            默认帮助控制器，暂时只提供程序名称，环境变量
+            </summary>
+        </member>
+        <member name="M:Api.Controllers.EnvController.Get">
+            <summary>
+            获取应用名称，环境变量
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Api.Controllers.TestController.Get">
+            <summary>
+            仅用于测试的接口，勿用
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:Api.Controllers.Users.RolesController">
+            <summary>
+            角色资源接口
+            </summary>
+        </member>
+        <member name="T:Api.Controllers.Users.TokensController">
+            <summary>
+            管理token控制器，即常规登陆注销接口
+            </summary>
+        </member>
+        <member name="M:Api.Controllers.Users.TokensController.Post(Api.Models.User.LoginViewModel)">
+            <summary>
+            登录接口
+            </summary>
+            <param name="model"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Api.Controllers.Users.UsersController">
+            <summary>
+            用户资源接口
+            </summary>
+        </member>
+        <member name="M:Api.Controllers.Users.UsersController.Get(Api.Models.User.UsersViewModel)">
+            <summary>
+             获取用户列表
+            </summary>
+            <param name="model"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Api.Controllers.Users.UsersController.Delete(System.Int64)">
+            <summary>
+            删除用户，逻辑删除
+            </summary>
+            <param name="Id"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Api.Models.User.LoginViewModel">
+            <summary>
+            用户登录视图
+            </summary>
+        </member>
+        <member name="P:Api.Models.User.LoginViewModel.Account">
+            <summary>
+            账号名称
+            </summary>
+        </member>
+        <member name="P:Api.Models.User.LoginViewModel.Password">
+            <summary>
+            账号密码
+            </summary>
+        </member>
+        <member name="T:Api.Models.User.RoleCreateViewModel">
+            <summary>
+            角色新建视图
+            </summary>
+        </member>
+        <member name="P:Api.Models.User.RoleCreateViewModel.Name">
+            <summary>
+            角色名称
+            </summary>
+        </member>
+        <member name="P:Api.Models.User.RoleCreateViewModel.Functions">
+            <summary>
+            角色对应的功能点列表
+            </summary>
+        </member>
+        <member name="T:Api.Models.User.RolesViewModel">
+            <summary>
+            角色列表
+            </summary>
+        </member>
+        <member name="P:Api.Models.User.RolesViewModel.Name">
+            <summary>
+            角色名称
+            </summary>
+        </member>
+        <member name="T:Api.Models.User.RoleUpdateViewModel">
+            <summary>
+            角色编辑
+            </summary>
+        </member>
+        <member name="P:Api.Models.User.RoleUpdateViewModel.Id">
+            <summary>
+            角色id
+            </summary>
+        </member>
+        <member name="T:Api.Models.User.UserCreateViewModel">
+            <summary>
+            用户新建
+            </summary>
+        </member>
+        <member name="P:Api.Models.User.UserCreateViewModel.Code">
+            <summary>
+            用户编码，账号
+            </summary>
+        </member>
+        <member name="P:Api.Models.User.UserCreateViewModel.RealName">
+            <summary>
+            真实姓名
+            </summary>
+        </member>
+        <member name="P:Api.Models.User.UserCreateViewModel.Birthday">
+            <summary>
+            生日
+            </summary>
+        </member>
+        <member name="P:Api.Models.User.UserCreateViewModel.Gender">
+            <summary>
+            性别 <seealso cref="T:Infrastructure.Constants.Enums.EGender"/>
+            </summary>
+        </member>
+        <member name="P:Api.Models.User.UserCreateViewModel.Mobile">
+            <summary>
+            手机号
+            </summary>
+        </member>
+        <member name="P:Api.Models.User.UserCreateViewModel.EMail">
+            <summary>
+            电子邮箱
+            </summary>
+        </member>
+        <member name="P:Api.Models.User.UserCreateViewModel.Password">
+            <summary>
+            密码
+            </summary>
+        </member>
+        <member name="T:Api.Models.User.UsersViewModel">
+            <summary>
+            用户列表
+            </summary>
+        </member>
+        <member name="P:Api.Models.User.UsersViewModel.Account">
+            <summary>
+            账号
+            </summary>
+        </member>
+        <member name="T:Api.Models.User.UserUpdateViewModel">
+            <summary>
+            用户编辑
+            </summary>
+        </member>
+        <member name="P:Api.Models.User.UserUpdateViewModel.Id">
+            <summary>
+            主键
+            </summary>
+        </member>
+        <member name="P:Api.Models.User.UserUpdateViewModel.AccountStatus">
+            <summary>
+            账号状态
+            </summary>
+        </member>
+        <member name="T:Api.Program">
+            <summary>
+            启动入口类
+            </summary>
+        </member>
+        <member name="M:Api.Program.Main(System.String[])">
+            <summary>
+            启动入口方法
+            </summary>
+            <param name="args"></param>
+        </member>
+        <member name="M:Api.Program.BuildWebHost(System.String[])">
+            <summary>
+            生成webhost
+            </summary>
+            <param name="args"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Api.Startup">
+            <summary>
+            默认启动配置文件
+            </summary>
+        </member>
+        <member name="M:Api.Startup.#ctor(Microsoft.AspNetCore.Hosting.IHostingEnvironment,Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            构造函数
+            </summary>
+            <param name="env"></param>
+            <param name="configuration"></param>
+        </member>
+        <member name="P:Api.Startup.Configuration">
+            <summary>
+            配置信息，读取appsettings.json文件
+            </summary>
+        </member>
+        <member name="P:Api.Startup.HostingEnvironment">
+            <summary>
+            环境变量，读取服务器ASPNETCORE_ENVIRONMENT环境变量
+            </summary>
+        </member>
+        <member name="M:Api.Startup.ConfigureServices(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            配置服务，常用于配置依赖注入
+            </summary>
+            <param name="services"></param>
+        </member>
+        <member name="M:Api.Startup.Configure(Microsoft.AspNetCore.Builder.IApplicationBuilder,Microsoft.Extensions.Logging.ILoggerFactory)">
+            <summary>
+            配置方法，常用于配置中间件
+            </summary>
+            <param name="app"></param>
+            <param name="logger"></param>
+        </member>
+        <member name="M:Api.Startup.ConfigureCache(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            开发环境不使用缓存
+            </summary>
+            <param name="services"></param>
+        </member>
+    </members>
+</doc>
