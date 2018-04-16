@@ -1,8 +1,10 @@
-// 测试
+import { routerRedux } from 'dva/router';
 import { message } from 'antd';
+import decode from 'jwt-decode';
 import { query as queryUsers, queryCurrent, queryMenus } from '../services/user';
 import { getMenuData } from '../common/menu';
 import request, { checkResponses } from '../utils/request';
+import { getToken } from '../utils/token';
 
 export default {
   namespace: 'user',
@@ -10,7 +12,6 @@ export default {
   state: {
     data: [],
     currentUser: {},
-    menus: [],
   },
 
   effects: {
@@ -21,47 +22,16 @@ export default {
         payload: response,
       });
     },
-    *fetchCurrent(_, { call, put }) {
-      let response = {};
-      if (DEFAULT_LOGIN) { //eslint-disable-line
-        response = {
-          name: 'zhouyu',
-          avatar: 'https://gw.alipayobjects.com/zos/rmsportal/BiazfanxmamNRoxxVxka.png',
-          userid: '00000001',
-          notifyCount: 12,
-        };
+    *fetchCurrentUser(_, { put }) {
+      const token = getToken();
+      if (!token) {
+        yield put(routerRedux.push('/user/login'));
       } else {
-        response = yield call(queryCurrent);
+        yield put({
+          type: 'saveCurrentUser',
+          payload: decode(token),
+        });
       }
-      yield put({
-        type: 'saveCurrentUser',
-        payload: response,
-      });
-    },
-    *fetchMenus(_, { call, put }) {
-      let response = {};
-      if (DEFAULT_LOGIN) { //eslint-disable-line
-        response = [
-          {
-            url: 'advertiser/log',
-            roles: [1],
-          },
-        ];
-      } else {
-        response = yield call(queryMenus);
-      }
-      yield put({
-        type: 'saveMenus',
-        payload: response,
-      });
-    },
-    *getAccount({ callback }, { call, put }) {
-      const response = yield call(getAccount);
-      yield put({
-        type: 'res',
-        payload: response,
-      });
-      checkResponses(response, callback);
     },
     *Add({ payload, callback }, { call, put }) {
       const response = yield call(goadd, payload);

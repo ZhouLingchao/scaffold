@@ -1,7 +1,7 @@
 import request from '../utils/request';
 
 export async function accountLogin(params) {
-  return request('/tokens', { method: 'POST', body: { ...params } });
+  return request('tokens', { method: 'POST', body: { ...params } });
 }
 
 export async function sendVerifyCode(params) {

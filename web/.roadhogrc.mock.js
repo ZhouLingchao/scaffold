@@ -30,6 +30,11 @@ const proxy = {
       notifyCount: 12,
     },
   },
+  'POST /api/tokens': {
+    code: 200,
+    message: '',
+    data: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIxNTZlN2RkNi1hZjQ3LTRjN2QtOTRiMy0zMzQ2ODU4NzYyZTQiLCJpc3MiOiJnd3QuYXBpIiwiaWF0IjoiMjAxOC80LzE2IDI6MTE6MjEiLCJuYmYiOjE1MjM4NDQ2ODEsImV4cCI6MTUyMzg0ODI4MSwiYXVkIjoiZ3d0LndlYiJ9.Oxmit1JegCtsIULDTU8dIJIsP4Pct1vvRVtabvAmfv8',
+  },
   // GET POST 可省略
   'GET /api/users': [{
     key: '1',

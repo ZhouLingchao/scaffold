@@ -72,16 +72,14 @@ export default function request(url, options) {
     };
     newOptions.body = JSON.stringify(newOptions.body);
   }
-  return fetch(APIURL + getRightApiUrl(url), newOptions) // eslint-disable-line
+  return fetch(getRealUrl(url), newOptions) // eslint-disable-line
     .then(checkStatus)
     .then((response) => {
-      return response.text();
+      return response.json();
     })
-    .then((text) => {
-      if (!text) return {};
-      const json = JSON.parse(text);
-
+    .then((json) => {
       const { code, message } = json;
+      // 2** 字段表示请求成功
       if (code && (code >= 300 || code < 200)) {
         // error
         notification.error({
@@ -90,8 +88,8 @@ export default function request(url, options) {
         });
         return {
           ...json,
-          
-        }
+          error: true,
+        };
       }
       return json;
     })
@@ -107,15 +105,12 @@ export default function request(url, options) {
       }
       if (status === 403) {
         dispatch(routerRedux.push('/exception/403'));
-        return errorResponse;
       }
       if (status <= 504 && status >= 500) {
         dispatch(routerRedux.push('/exception/500'));
-        return errorResponse;
       }
       if (status >= 404 && status < 422) {
         dispatch(routerRedux.push('/exception/404'));
-        return errorResponse;
       }
     });
 }

@@ -3,6 +3,6 @@ export default (url) => {
   const startWithSlash = url.startsWith('/');
   const endsWithSlash = APIURL.endsWith('/'); // eslint-disable-line
   const trimUrl = startWithSlash ? url.substring(1) : url;
-  return `${startWithSlash || endsWithSlash ? '' : '/'}${startWithApi ? '' : 'api/'}${trimUrl}`;
+  return `${startWithSlash || endsWithSlash ? '' : '/'}${startWithApi ? '/' : '/api/'}${trimUrl}`;
 };
 

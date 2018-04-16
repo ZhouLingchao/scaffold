@@ -84,14 +84,11 @@ class BasicLayout extends React.PureComponent {
         isMobile: mobile,
       });
     });
-    this.props.dispatch({
-      type: 'user/fetchCurrent',
-    });
-    this.props.dispatch({
-      type: 'user/fetchMenus',
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'fetchCurrentUser',
     });
   }
-
   getPageTitle() {
     const { routerData, location } = this.props;
     const { pathname } = location;
@@ -158,13 +155,6 @@ class BasicLayout extends React.PureComponent {
       payload: collapsed,
     });
   }
-  handleNoticeClear = (type) => {
-    message.success(`清空了${type}`);
-    this.props.dispatch({
-      type: 'global/clearNotices',
-      payload: type,
-    });
-  }
   handleMenuClick = ({ key }) => {
     if (key === 'triggerError') {
       this.props.dispatch(routerRedux.push('/exception/trigger'));
@@ -173,13 +163,6 @@ class BasicLayout extends React.PureComponent {
     if (key === 'logout') {
       this.props.dispatch({
         type: 'login/logout',
-      });
-    }
-  }
-  handleNoticeVisibleChange = (visible) => {
-    if (visible) {
-      this.props.dispatch({
-        type: 'global/fetchNotices',
       });
     }
   }
@@ -207,11 +190,9 @@ class BasicLayout extends React.PureComponent {
             <GlobalHeader
               logo={logo}
               currentUser={currentUser}
-              fetchingNotices={fetchingNotices}
               notices={notices}
               collapsed={collapsed}
               isMobile={this.state.isMobile}
-              onNoticeClear={this.handleNoticeClear}
               onCollapse={this.handleMenuCollapse}
               onMenuClick={this.handleMenuClick}
               onNoticeVisibleChange={this.handleNoticeVisibleChange}
@@ -259,5 +240,4 @@ class BasicLayout extends React.PureComponent {
 export default connect(({ user, global }) => ({
   currentUser: user.currentUser,
   collapsed: global.collapsed,
-  menus: user.menus,
 }))(BasicLayout);
