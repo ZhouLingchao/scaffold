@@ -7,6 +7,7 @@ import { Route, Redirect, Switch, routerRedux } from 'dva/router';
 import { ContainerQuery } from 'react-container-query';
 import classNames from 'classnames';
 import { enquireScreen } from 'enquire-js';
+import { getPageTitle } from 'utils/utils';
 import GlobalHeader from '../components/GlobalHeader';
 import SiderMenu from '../components/SiderMenu';
 import NotFound from '../routes/Exception/404';
@@ -14,6 +15,7 @@ import { getRoutes } from '../utils/utils';
 import Authorized from '../utils/Authorized';
 import { getMenuData } from '../common/menu';
 import logo from '../assets/logo.png';
+
 
 const { Content, Header } = Layout;
 const { AuthorizedRoute } = Authorized;
@@ -86,17 +88,8 @@ class BasicLayout extends React.PureComponent {
     });
     const { dispatch } = this.props;
     dispatch({
-      type: 'fetchCurrentUser',
+      type: 'user/fetchCurrentUser',
     });
-  }
-  getPageTitle() {
-    const { routerData, location } = this.props;
-    const { pathname } = location;
-    let title = WEB_TITLE; //eslint-disable-line
-    if (routerData[pathname] && routerData[pathname].name) {
-      title = `${routerData[pathname].name} - ${title}`;
-    }
-    return title;
   }
   getBashRedirect = () => {
     // According to the url parameter to redirect
@@ -109,45 +102,9 @@ class BasicLayout extends React.PureComponent {
       urlParams.searchParams.delete('redirect');
       window.history.replaceState(null, 'redirect', urlParams.href);
     } else {
-      return '/index/index';
+      return '/index';
     }
     return redirect;
-  }
-  getWrapAuthorityRoutes = () => {
-    const { routerData, menus } = this.props;
-    const wrapMenus = new Map();
-    if (!menus || menus.length === 0) return routerData;
-    this.getFlatMenu(menus).forEach((menu) => {
-      wrapMenus.set(menu.path, menu.authority);
-    });
-
-    const wrapRouterData = {};
-    Object.keys(routerData)
-      .filter(key => routerData[key].authority || wrapMenus.has(key))
-      .forEach((key) => {
-        let { authority } = routerData[key];
-        if (!routerData[key].authority) {
-          authority = wrapMenus.get(key); //eslint-disable-line
-        }
-        wrapRouterData[key] = {
-          ...routerData[key],
-          authority,
-        };
-      });
-    return wrapRouterData;
-  }
-  getFlatMenu = (menus) => {
-    const flatMenus = [];
-    menus.forEach((menu) => {
-      flatMenus.push({
-        ...menu,
-        path: `/${menu.path}`,
-      });
-      if (menu.children) {
-        this.getFlatMenu(menu.children).forEach(subMenu => flatMenus.push(subMenu));
-      }
-    });
-    return flatMenus;
   }
   handleMenuCollapse = (collapsed) => {
     this.props.dispatch({
@@ -156,10 +113,6 @@ class BasicLayout extends React.PureComponent {
     });
   }
   handleMenuClick = ({ key }) => {
-    if (key === 'triggerError') {
-      this.props.dispatch(routerRedux.push('/exception/trigger'));
-      return;
-    }
     if (key === 'logout') {
       this.props.dispatch({
         type: 'login/logout',
@@ -168,7 +121,7 @@ class BasicLayout extends React.PureComponent {
   }
   render() {
     const {
-      currentUser, collapsed, fetchingNotices, notices, match, location, menus,
+      currentUser, collapsed, notices, match, location, routerData,
     } = this.props;
     const bashRedirect = this.getBashRedirect();
     const layout = (
@@ -179,7 +132,7 @@ class BasicLayout extends React.PureComponent {
           // If you do not have the Authorized parameter
           // you will be forced to jump to the 403 interface without permission
           Authorized={Authorized}
-          menuData={menus || []}
+          menuData={currentUser.auth || []}
           collapsed={collapsed}
           location={location}
           isMobile={this.state.isMobile}
@@ -195,7 +148,6 @@ class BasicLayout extends React.PureComponent {
               isMobile={this.state.isMobile}
               onCollapse={this.handleMenuCollapse}
               onMenuClick={this.handleMenuClick}
-              onNoticeVisibleChange={this.handleNoticeVisibleChange}
             />
           </Header>
           <Content style={{ margin: '24px 24px 0', height: '100%' }}>
@@ -206,7 +158,7 @@ class BasicLayout extends React.PureComponent {
                 )
               }
               {
-                getRoutes(match.path, this.getWrapAuthorityRoutes()).map(item =>
+                getRoutes(match.path, routerData).map(item =>
                   (
                     <AuthorizedRoute
                       key={item.key}
@@ -228,7 +180,7 @@ class BasicLayout extends React.PureComponent {
     );
 
     return (
-      <DocumentTitle title={this.getPageTitle()}>
+      <DocumentTitle title={getPageTitle(routerData, location)}>
         <ContainerQuery query={query}>
           {params => <div className={classNames(params)}>{layout}</div>}
         </ContainerQuery>

@@ -6,6 +6,7 @@ using Infrastructure.Pager;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -17,11 +18,11 @@ namespace Api.Controllers.Users
     /// </summary>
     [Route("api/[controller]")]
     [Authorize]
-    public class RolesController:Controller
+    public class RolesController : Controller
     {
         private readonly ApiDbContext _db;
         private readonly IPagerService _pager;
-        public RolesController(ApiDbContext db , IPagerService pager)
+        public RolesController(ApiDbContext db, IPagerService pager)
         {
             _db = db;
             _pager = pager;
@@ -35,7 +36,7 @@ namespace Api.Controllers.Users
                 x.Id,
                 x.Name,
             });
-            var data = await _pager.GetPagedListAsync(body.OrderBy(x => x.Id),model);
+            var data = await _pager.GetPagedListAsync(body.OrderBy(x => x.Id), model);
             return data.ToFormatJson();
 
         }
@@ -76,7 +77,7 @@ namespace Api.Controllers.Users
         [HttpPut]
         public async Task Put([FromBody]RoleUpdateViewModel model)
         {
-            var entity =await _db.Role.FirstOrDefaultAsync(x => x.Id == model.Id);
+            var entity = await _db.Role.FirstOrDefaultAsync(x => x.Id == model.Id);
             if (null == entity) throw new MessageException("角色不存在");
             entity.Name = model.Name;
             entity.RoleFunctions = BuildRoleFunctions(model, entity);

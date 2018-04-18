@@ -2,6 +2,7 @@ import React from 'react';
 import { Link, Redirect, Switch, Route } from 'dva/router';
 import DocumentTitle from 'react-document-title';
 import { Icon } from 'antd';
+import { getPageTitle } from 'utils/utils';
 import GlobalFooter from '../components/GlobalFooter';
 import styles from './UserLayout.less';
 import logo from '../assets/logo.png';
@@ -15,20 +16,11 @@ const copyright = (
 );
 
 class UserLayout extends React.PureComponent {
-  getPageTitle() {
-    const { routerData, location } = this.props;
-    const { pathname } = location;
-    let title = WEB_TITLE; // eslint-disable-line
-    if (routerData[pathname] && routerData[pathname].name) {
-      title = `${routerData[pathname].name} - ${title}}`;
-    }
-    return title;
-  }
   render() {
-    const { routerData, match } = this.props;
+    const { routerData, match, location } = this.props;
     const title = WEB_TITLE; // eslint-disable-line
     return (
-      <DocumentTitle title={this.getPageTitle()}>
+      <DocumentTitle title={getPageTitle(routerData, location)}>
         <div className={styles.container}>
           <div className={styles.content}>
             <div className={styles.top}>

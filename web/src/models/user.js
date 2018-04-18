@@ -24,13 +24,13 @@ export default {
     },
     *fetchCurrentUser(_, { put }) {
       const token = getToken();
-      if (!token) {
-        yield put(routerRedux.push('/user/login'));
-      } else {
+      if (token) {
         yield put({
           type: 'saveCurrentUser',
           payload: decode(token),
         });
+      } else {
+        yield put(routerRedux.push('/user/login'));
       }
     },
     *Add({ payload, callback }, { call, put }) {

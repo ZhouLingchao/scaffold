@@ -1,7 +1,9 @@
 import { createElement } from 'react';
 import dynamic from 'dva/dynamic';
 import pathToRegexp from 'path-to-regexp';
+import decode from 'jwt-decode';
 import { getMenuData } from './menu';
+import { getToken, getItem, setItem } from '../utils/token';
 
 let routerDataCache;
 
@@ -38,7 +40,7 @@ const dynamicWrapper = (app, models, component) => {
     app,
     models: () => models.filter(
       model => modelNotExisted(app, model)).map(m => import(`../models/${m}.js`)
-    ),
+      ),
     // add routerData prop
     component: () => {
       if (!routerDataCache) {
@@ -71,9 +73,9 @@ function getFlatMenuData(menus) {
 export const getRouterData = (app) => {
   const routerConfig = {
     '/': {
-      component: dynamicWrapper(app, ['user', 'login'], () => import('../layouts/BasicLayout')),
+      component: dynamicWrapper(app, ['user', 'global'], () => import('../layouts/BasicLayout')),
     },
-    '/index/index': {
+    '/index': {
       component: dynamicWrapper(app, [], () => import('../routes/Index/Index')),
     },
     '/exception/403': {
@@ -107,12 +109,24 @@ export const getRouterData = (app) => {
       component: dynamicWrapper(app, ['role'], () => import('../routes/Manage/Role')),
     },
   };
+  const authority = (target) => {
+    const token = getToken();
+    if (token) {
+      const userInfo = decode(token);
+      if (!userInfo.auth) return false;
+      return userInfo.auth.filter(item => `/${item}` === target.props.path).length > 0;
+    }
+    return false;
+  };
+
   // Get name from ./menu.js or just set it in the router data.
   const menuData = getFlatMenuData(getMenuData());
 
   // Route configuration data
   // eg. {name,authority ...routerConfig }
   const routerData = {};
+
+
   // The route matches the menu
   Object.keys(routerConfig).forEach((path) => {
     // Regular match item name
@@ -131,7 +145,8 @@ export const getRouterData = (app) => {
     router = {
       ...router,
       name: router.name || menuItem.name,
-      authority: router.authority || menuKey ? menuItem.authority : 'guest',
+      authority: menuKey ? authority : '',
+      path,
     };
     routerData[path] = router;
   });

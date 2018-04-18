@@ -8,7 +8,7 @@
       "type": "chrome",
       "request": "attach",
       "name": "启动 Chrome 并打开 localhost",
-      "url": "http://localhost:8000/user/login",
+      "url": "http://localhost:8000/index/index",
       "webRoot": "${workspaceRoot}/src",
       "sourceMapPathOverrides": {
         "webpack:///src/*": "${webRoot}/*"

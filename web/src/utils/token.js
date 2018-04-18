@@ -7,3 +7,12 @@ export function getToken() {
 export function setToken(token) {
   return localStorage.setItem(key, token);
 }
+
+
+export function getItem(itemKey) {
+  return localStorage.getItem(key + itemKey);
+}
+
+export function setItem(itemKey, itemValue) {
+  return localStorage.setItem(itemKey, itemValue);
+}

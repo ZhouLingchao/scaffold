@@ -2,6 +2,7 @@ import React, { PureComponent } from 'react';
 import { Layout, Menu, Icon } from 'antd';
 import pathToRegexp from 'path-to-regexp';
 import { Link } from 'dva/router';
+import { getMenuData } from 'common/menu';
 import styles from './index.less';
 
 const { Sider } = Layout;
@@ -160,11 +161,43 @@ export default class SiderMenu extends PureComponent {
     }
     return menusData
       .filter(item => item.name && !item.hideInMenu)
-      .map((item) => {
-        const ItemDom = this.getSubMenuOrItem(item);
-        return this.checkPermissionItem(item.authority, ItemDom);
-      })
+      .map(item => this.getSubMenuOrItem(item))
       .filter(item => !!item);
+  }
+
+  /**
+   * 根据用户权限，新建菜单项
+   * 1.将用户权限转成Set
+   * 2.遍历所有菜单allmenu,过滤不在set中的菜单
+   */
+  getAuthMenuItems = (paths) => {
+    const allMenu = getMenuData();
+    const authPaths = this.getAuthPathSet(paths);
+    return this.filterMenus(allMenu, authPaths);
+  }
+
+  getAuthPathSet = (paths) => {
+    const authPaths = new Set();
+    paths.forEach((path) => {
+      const pathNodes = path.split('/');
+      let tempPath = ''; // 暂存的路径，包括循环中产生的路径
+      for (let i = 0; i < pathNodes.length; i += 1) {
+        const pathNode = pathNodes[i];
+        tempPath = tempPath ? `${tempPath}/${pathNode}` : pathNode;
+        authPaths.add(tempPath);
+      }
+    });
+    return authPaths;
+  }
+
+  filterMenus = (menus, authPaths) => {
+    return menus.filter(item => authPaths.has(item.path))
+      .map((item) => {
+        return {
+          ...item,
+          children: item.children ? this.filterMenus(item.children, authPaths) : undefined,
+        };
+      });
   }
   // conversion Path
   // 转化路径
@@ -174,17 +207,6 @@ export default class SiderMenu extends PureComponent {
     } else {
       return `/${path || ''}`.replace(/\/+/g, '/');
     }
-  }
-  // permission to check
-  checkPermissionItem = (authority, ItemDom) => {
-    if (this.props.Authorized && this.props.Authorized.check) {
-      const { check } = this.props.Authorized;
-      return check(
-        authority,
-        ItemDom
-      );
-    }
-    return ItemDom;
   }
   handleOpenChange = (openKeys) => {
     const lastOpenKey = openKeys[openKeys.length - 1];
@@ -196,7 +218,7 @@ export default class SiderMenu extends PureComponent {
     });
   }
   render() {
-    const { logo, collapsed, location: { pathname }, onCollapse } = this.props;
+    const { logo, collapsed, location: { pathname }, onCollapse, menuData } = this.props;
     const { openKeys } = this.state;
     // Don't show popup menu when it is been collapsed
     const menuProps = collapsed ? {} : {
@@ -207,6 +229,7 @@ export default class SiderMenu extends PureComponent {
     if (!selectedKeys.length) {
       selectedKeys = [openKeys[openKeys.length - 1]];
     }
+    // filter menu
     return (
       <Sider
         trigger={null}
@@ -232,7 +255,7 @@ export default class SiderMenu extends PureComponent {
           selectedKeys={selectedKeys}
           style={{ padding: '16px 0', width: '100%' }}
         >
-          {this.getNavMenuItems(this.props.menuData)}
+          {this.getNavMenuItems(this.getAuthMenuItems(menuData))}
         </Menu>
       </Sider>
     );

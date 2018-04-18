@@ -19,5 +19,8 @@ namespace Db.Entities.Users
         public List<UserRoleRel> UserRoleRel { get; set; }
 
         public List<RoleFunctions> RoleFunctions { get; set; }
+
+        [Timestamp]
+        public byte[] Timespan { get; set; }
     }
 }

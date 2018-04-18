@@ -23,7 +23,7 @@ export default {
           payload: response,
         });
         reloadAuthorized();
-        yield put(routerRedux.push('/'));
+        yield put(routerRedux.push('/index'));
       }
     },
     *logout(_, { put, select }) {
@@ -39,7 +39,7 @@ export default {
           type: 'changeLoginStatus',
           payload: {
             status: false,
-            currentAuthority: 'guest',
+            data: '',
           },
         });
         reloadAuthorized();

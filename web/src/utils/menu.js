@@ -1,5 +1,7 @@
 import { isUrl } from './utils';
 
+// 将菜单转成  manage/user形式
+// 如果当前节点权限为空，则用父节点权限代替
 function formatter(data, parentPath = '', parentAuthority) {
   return data.map((item) => {
     let { path } = item;
@@ -18,6 +20,6 @@ function formatter(data, parentPath = '', parentAuthority) {
   });
 }
 
-export const getMenuData = ({ menuData }) => {
+export const getFullPathMenusList = (menuData) => {
   return menuData ? formatter(menuData) : [];
 };
