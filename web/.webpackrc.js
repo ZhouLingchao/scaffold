@@ -25,7 +25,9 @@ export default {
     "APIURL": "http://api.yunshu.com/",
     "DEFAULT_LOGIN": false,
     "WEB_TITLE": "管理平台",
-    "JWT_TOKEN_KEY": "jwt-token"
+    "JWT_TOKEN_KEY": "jwt-token",
+    "DEFAULT_PAGE_INDEX": 1,
+    "DEFAULT_PAGE_SIZE": 10
   },
   "env": {
     "development": {

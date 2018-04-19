@@ -5,7 +5,7 @@ import TemplateQueryPage from 'components/TemplateQueryPage';
 import styles from 'common/base.less';
 import CreateForm from './CreateForm';
 
-const { Col } = TemplateQueryPage;
+const { TCol } = TemplateQueryPage;
 
 @connect(({ user, loading }) => ({ // dva封装后的react-router组件,用于添加dispatch
   user,
@@ -73,18 +73,18 @@ export default class user extends PureComponent {
   // 获取form的查询项
   getFields = () => {
     const children = [
-      <Col lg={4} xs={24} key="account">
+      <TCol lg={4} xs={24} key="account">
         <Input placeholder="账户" />
-      </Col>,
-      <Col lg={4} xs={24} key="name">
+      </TCol>,
+      <TCol lg={4} xs={24} key="name">
         <Input placeholder="客户姓名" />
-      </Col>,
-      <Col lg={4} xs={24} key="mobileNo">
+      </TCol>,
+      <TCol lg={4} xs={24} key="mobileNo">
         <Input placeholder="客户电话" />
-      </Col>,
-      <Col lg={4} xs={24} key="creator">
+      </TCol>,
+      <TCol lg={4} xs={24} key="creator">
         <Input placeholder="添加人" />
-      </Col>,
+      </TCol>,
     ];
     return children;
   }
@@ -205,7 +205,7 @@ export default class user extends PureComponent {
   // 渲染
   render() {
     const { modaloption, modalVisible, modalvalue } = this.state;
-    const { user: model, ...rest } = this.props;
+    const { user: model, form, loading } = this.props;
     const parentMethods = {
       handleAdd: this.handleAdd,
       handleModalVisible: this.handleModalVisible,
@@ -216,7 +216,8 @@ export default class user extends PureComponent {
     return (
       <Fragment>
         <TemplateQueryPage
-          {...rest}
+          form={form}
+          loading={loading}
           autoQuery
           model={model}
           query={this.query}

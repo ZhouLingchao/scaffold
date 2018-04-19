@@ -36,39 +36,28 @@ const proxy = {
     data: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIxNTZlN2RkNi1hZjQ3LTRjN2QtOTRiMy0zMzQ2ODU4NzYyZTQiLCJpc3MiOiJnd3QuYXBpIiwiaWF0IjoiMjAxOC80LzE2IDI6MTE6MjEiLCJuYmYiOjE1MjM4NDQ2ODEsImV4cCI6MTUyMzg0ODI4MSwiYXVkIjoiZ3d0LndlYiIsImF1dGgiOlsibWFuYWdlL3VzZXIiLCJtYW5hZ2Uvcm9sZSJdLCJuYW1lIjoidHl6aG91In0.vtWuWemUgIvM5BCaRQyY-o4KlKqOh-oZBB826jQeqUU',
   },
   // GET POST 可省略
-  'GET /api/users': [{
-    key: '1',
-    name: 'John Brown',
-    age: 32,
-    address: 'New York No. 1 Lake Park',
-  }, {
-    key: '2',
-    name: 'Jim Green',
-    age: 42,
-    address: 'London No. 1 Lake Park',
-  }, {
-    key: '3',
-    name: 'Joe Black',
-    age: 32,
-    address: 'Sidney No. 1 Lake Park',
-  }],
-  // GET POST 可省略
-  'GET /api/userList': [{
-    key: '1',
-    name: 'John Brown',
-    age: 32,
-    address: 'New York No. 1 Lake Park',
-  }, {
-    key: '2',
-    name: 'Jim Green',
-    age: 42,
-    address: 'London No. 1 Lake Park',
-  }, {
-    key: '3',
-    name: 'Joe Black',
-    age: 32,
-    address: 'Sidney No. 1 Lake Park',
-  }],
+  'GET /api/users': (req, res) => {
+    const total = 50;
+    const rows = [];
+    for (let i = 0; i < total; i++) {
+      rows.push({
+        id: i,
+        name: `name${i}`,
+        enable: true,
+        roleName: '所有权限',
+        remark: '备注',
+        account: 'account',
+        mobileNo: '13777349985',
+      });
+    }
+    return res.json({
+      code: 200,
+      data: {
+        total,
+        rows,
+      }
+    });
+  },
   'GET /api/project/notice': getNotice,
   'GET /api/activities': getActivities,
   'GET /api/rule': getRule,
@@ -90,21 +79,21 @@ const proxy = {
   'GET /api/profile/advanced': getProfileAdvancedData,
   'POST /api/login/account': (req, res) => {
     const { password, mobile, type } = req.body;
-    if(password === '888888' && mobile === '13711111111'){
+    if (password === '888888' && mobile === '13711111111') {
       res.send({
         status: 'ok',
         type,
         currentAuthority: 'admin'
       });
-      return ;
+      return;
     }
-    if(password === '123456' && userName === 'user'){
+    if (password === '123456' && userName === 'user') {
       res.send({
         status: 'ok',
         type,
         currentAuthority: 'user'
       });
-      return ;
+      return;
     }
     res.send({
       status: 'error',
@@ -152,9 +141,9 @@ const proxy = {
       "path": "/base/category/list"
     });
   },
-  'GET /api/logs':getLogs,
-  'GET /api/logs/export':{ url : 'http://localhost:12000/test.csv'},
- 
+  'GET /api/logs': getLogs,
+  'GET /api/logs/export': { url: 'http://localhost:12000/test.csv' },
+
 };
 
 export default noProxy ? {} : delay(proxy, 1000);

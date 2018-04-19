@@ -82,26 +82,20 @@ export default function request(url, options) {
       // 2** 字段表示请求成功
       if (code && (code >= 300 || code < 200)) {
         // error
-        notification.error({
-          message,
-          description: message,
-        });
-        return {
-          ...json,
-          error: true,
-        };
+        const error = new Error(message);
+        error.name = 'handled';
+        error.response = json;
+        throw error;
       }
       return json;
     })
     .catch((e) => {
       const { dispatch } = store;
       const status = e.name;
-      const errorResponse = { error: true };
       if (status === 401) {
         dispatch({
           type: 'login/logout',
         });
-        return errorResponse;
       }
       if (status === 403) {
         dispatch(routerRedux.push('/exception/403'));
@@ -112,6 +106,7 @@ export default function request(url, options) {
       if (status >= 404 && status < 422) {
         dispatch(routerRedux.push('/exception/404'));
       }
+      throw e;
     });
 }
 

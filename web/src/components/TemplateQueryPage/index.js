@@ -5,32 +5,36 @@ import TemplateCol from './templateCol';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 
 /*
-  通用模板，输出一个常规的增删查改页面,具体可参考log.js，classsetting.js页面
-    api, 包含antd Table组建的所有props
-        model={model}  数据模型,约束位于文件夹/src/models下，需要在/src/commom/router.js注入
-        query={this.query} 查询方法委托
-        getFields={this.getFields} 查询表单方法委托
-          提供TemplateCol模板,可省略FormItem,getFieldDecorator等，相当于简写版本
-          *此模板较简单，若查询表单情况复杂，可使用antd示例代码自行编写代码
-          api
-            增加options={startDateOption}，为getFieldDecorator方法第二个参数
-        title="浏览日志" 面包屑下方法标题
-        rowKey="id" 提供了默认rowKey="id"
+  通用模板，输出一个常规的增删查改页面,具体可参考manage/user.js页面
+    具体api 参考render方法
 */
 class TemplateQueryPage extends PureComponent {
   constructor(props) { // 构造函数
     super(props);
-    this.state = {
-      formValues: {},
-      pagination: { pageSize: 10, current: 1, total: 0 },
-    };
+    this.state = this.getDefaultPagination();
   }
   // 页面加载完成理解查询
   componentDidMount() {
     if (this.props.autoQuery) {
-      this.handleRefTable();
+      this.handleQuery();
     }
   }
+  shouldComponentUpdate(nextProps, nextState){
+    if(this.props.model.data !== nextProps.model.data){
+      return true;
+    }
+    return false;
+  }
+  // 获取默认分页信息
+  getDefaultPagination = () => {
+    return {
+      pagination: {
+        pageSize: DEFAULT_PAGE_SIZE, // eslint-disable-line
+        current: DEFAULT_PAGE_INDEX, // eslint-disable-line
+      },
+    };
+  }
+  // customQuery == false , 自动添加查询、重置以及导出（exportConfig 不为空）按钮
   getDefaultForm = () => {
     const { getFields, exportConfig } = this.props;
     return (
@@ -50,7 +54,38 @@ class TemplateQueryPage extends PureComponent {
       </Fragment>
     );
   }
-
+  // 有调用方提供自行提供按钮
+  getCustomForm = () => {
+    const { getFields } = this.props;
+    return (
+      <Row>
+        {
+          getFields(this).map(this.wrapField)
+        }
+      </Row>
+    );
+  }
+  // 获取包裹了序号列的列组
+  getWrapSeqColumns = () => {
+    const { columns } = this.props;
+    const wrapSeqColumns = [
+      {
+        title: '序号',
+        dataIndex: 'autoIndex',
+        render(text, record, index) {
+          return index + 1;
+        },
+      },
+      ...columns.map((col) => {
+        return {
+          sorter: (a, b) => (a[col.dataIndex] > b[col.dataIndex] ? 1 : -1),
+          ...col,
+        };
+      }),
+    ];
+    return wrapSeqColumns;
+  }
+  // 格式化所有字段参数
   formatFieldsValue = (fieldsValue) => {
     const flatObject = {};
     Object.keys(fieldsValue).forEach((key) => {
@@ -67,7 +102,7 @@ class TemplateQueryPage extends PureComponent {
     });
     return formatObject;
   }
-
+  // 格式化字段参数
   formatFieldValue = (fieldValue) => {
     if (fieldValue) {
       if (fieldValue._isAMomentObject) { // eslint-disable-line
@@ -78,79 +113,85 @@ class TemplateQueryPage extends PureComponent {
   }
   // 导出
   handleExport = () => {
-    const { form, dispatch, exportConfig } = this.props;
+    const { dispatch, exportConfig } = this.props;
 
-    form.validateFields((err, fieldsValue) => {
-      if (err) return;
-      this.setState({
-        formValues: fieldsValue,
-      });
+    this.triggerRequestDelegate((params) => {
+      const { pageIndex, pageSize, ...formValues } = params;
       dispatch({
         type: 'export/xlsx',
         required: {
           ...exportConfig,
         },
-        payload: this.formatFieldsValue(fieldsValue),
+        payload: formValues,
       });
     });
   }
-
   // 重置
   handleReset = () => {
     const { form } = this.props;
     form.resetFields();
-    this.setState({
-      formValues: {},
-    });
-    this.props.query();
+    this.setState(this.getDefaultPagination());
   }
   // 页数变换处理函数
   handlePageChange = (pagination) => {
-    const { formValues } = this.state;
-
-    const params = {
-      pageIndex: pagination.current,
-      pageSize: pagination.pageSize,
-      ...this.formatFieldsValue(formValues),
-    };
+    const { query } = this.props;
     this.setState({ pagination });
-    this.props.query(params);
+    this.triggerRequestDelegate(params => query(params));
   }
   // 查询
-  handleSearch = (e) => {
-    e.preventDefault();
-    this.handleRefTable();
+  handleQuery = (e) => {
+    if (e) e.preventDefault();
+    const { query } = this.props;
+    this.triggerRequestDelegate(params => query(params));
   }
-  handleRefTable = () => {
-    const { form } = this.props;
 
-    form.validateFields((err, fieldsValue) => {
-      if (err) return;
-
-      this.setState({
-        formValues: fieldsValue,
-        pagination: { pageSize: 10, current: 1, total: 0 },
-      });
-
-      this.props.query(this.formatFieldsValue(fieldsValue));
-    });
-  }
+  // 为表单查询字段提供封装方法
   wrapField = (field) => {
     const { getFieldDecorator } = this.props.form;
     const wrapField = {
       ...field,
       props: {
+        ...field.props,
         getFieldDecorator,
         key: field.key,
-        ...field.props,
       },
     };
     return wrapField;
   }
+
+  // 所有触发了请求的委托方法统一入口
+  triggerRequestDelegate = (callback) => {
+    const { form } = this.props;
+    const { pagination } = this.state;
+    form.validateFields((err, fieldsValue) => {
+      const params = {
+        pageIndex: pagination.current,
+        pageSize: pagination.pageSize,
+        ...this.formatFieldsValue(fieldsValue),
+      };
+      callback(params);
+    });
+  }
   // 渲染
   render() {
+    console.log(this.props);
+    console.log(this.state);
     const {
-      model: { data }, columns, customQuery, getFields, title, tools, ...rest
+      model: { data }, // 数据模型,约束位于文件夹/src/models下，需要在/src/commom/router.js注入
+      columns, // 数据列组
+      hiddenDefaultButtons, // 是否隐藏默认的查询、导出
+      getFields, // 查询表单方法委托, 提供 this 参数
+      // 提供TemplateCol模板,可省略FormItem,getFieldDecorator等，相当于简写版本
+      // *此模板较简单，若查询表单情况复杂，可使用antd示例代码自行编写代码
+      // api
+      //   增加options={startDateOption}，为getFieldDecorator方法第二个参数
+      title, // "浏览日志" 面包屑下方法标题
+      getTools, // 工具栏方法, 提供 this 参数
+      form, // antd注入的用于处理表单的对象，无需添加至table组件
+      query, // 查询方法委托
+      rowKey, // 数据行key, 若不提供则使用默认rowKey="id"
+      autoQuery, // 是否打开页面自动加载数据
+      ...rest // 其他参数，用于支持antd table组件的所有参数
     } = this.props;
     const { pagination } = this.state;
     const wrapTotalPagination = {
@@ -159,51 +200,32 @@ class TemplateQueryPage extends PureComponent {
       showTotal: total => `总计 ${total} 行`,
       showQuickJumper: true,
     };
-
-    const wrapSeqColumns = [
-      {
-        title: '序号',
-        dataIndex: 'autoIndex',
-        render(text, record, index) {
-          return index + 1;
-        },
-      },
-      ...columns.map((col) => {
-        return {
-          sorter: (a, b) => (a[col.dataIndex] > b[col.dataIndex] ? 1 : -1),
-          ...col,
-        };
-      }),
-    ];
-
-
     const wrapProps = {
       ...rest,
       rowKey: rest.rowKey ? rest.rowKey : 'id',
-      dataSource: data.data,
-      columns: wrapSeqColumns,
+      dataSource: data.rows, // 数据源
+      columns: this.getWrapSeqColumns(),
       pagination: wrapTotalPagination,
       onChange: this.handlePageChange,
     };
 
-    if (this.props.refTable) {
-      this.props.refTable = this.handleRefTable;
-    }
     return (
       <PageHeaderLayout title={title} >
         <div className={styles.content}>
           <Form
-            onSubmit={this.handleSearch}
+            onSubmit={this.handleQuery}
             className={styles.form}
           >
-            {customQuery ? <Row>{getFields(this).map(this.wrapField)}</Row> : this.getDefaultForm()}
+            {
+              !hiddenDefaultButtons ? this.getDefaultForm() : this.getCustomForm()
+            }
           </Form>
           {
-            tools && (
+            getTools && (
               <div className={styles.tools}>
                 <Row>
                   {
-                    tools(this)
+                    getTools(this)
                   }
                 </Row>
               </div>
@@ -218,6 +240,6 @@ class TemplateQueryPage extends PureComponent {
   }
 }
 
-TemplateQueryPage.Col = TemplateCol;
+TemplateQueryPage.TCol = TemplateCol;
 
 export default TemplateQueryPage;
