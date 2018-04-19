@@ -12,7 +12,7 @@ const { TCol } = TemplateQueryPage;
   loading: loading.models.user,
 }))
 @Form.create() // antd提供的form组件，不用手动添加每个Form.Item的state onChange控制问题
-export default class user extends PureComponent {
+export default class User extends PureComponent {
   constructor(props) {
     super(props);
     // 展示列表
@@ -205,7 +205,7 @@ export default class user extends PureComponent {
   // 渲染
   render() {
     const { modaloption, modalVisible, modalvalue } = this.state;
-    const { user: model, form, loading } = this.props;
+    const { user, form, loading } = this.props;
     const parentMethods = {
       handleAdd: this.handleAdd,
       handleModalVisible: this.handleModalVisible,
@@ -216,13 +216,13 @@ export default class user extends PureComponent {
     return (
       <Fragment>
         <TemplateQueryPage
-          form={form}
           loading={loading}
+          form={form}
           autoQuery
-          model={model}
+          model={user}
           query={this.query}
           getFields={this.getFields}
-          tools={this.getTools}
+          getTools={this.getTools}
           columns={this.columns}
           title="用户管理"
           scroll={{ x: 900 }}

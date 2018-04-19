@@ -2,7 +2,7 @@ import mockjs from 'mockjs';
 import { getRule, postRule } from './mock/rule';
 import { getActivities, getNotice, getFakeList } from './mock/api';
 import { getFakeChartData } from './mock/chart';
-import { imgMap } from './mock/utils';
+import { imgMap, getUrlParams } from './mock/utils';
 import { getProfileBasicData } from './mock/profile';
 import { getProfileAdvancedData } from './mock/profile';
 import { getNotices } from './mock/notices';
@@ -39,10 +39,11 @@ const proxy = {
   'GET /api/users': (req, res) => {
     const total = 50;
     const rows = [];
-    for (let i = 0; i < total; i++) {
+    const params = getUrlParams(req.url);
+    for (let i = 0; i < 10; i++) {
       rows.push({
         id: i,
-        name: `name${i}`,
+        name: `name${(params.pageIndex || 1 - 1) * (params.pageSize || 10) + i}`,
         enable: true,
         roleName: '所有权限',
         remark: '备注',

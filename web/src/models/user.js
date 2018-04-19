@@ -1,9 +1,9 @@
 import { routerRedux } from 'dva/router';
 import { message } from 'antd';
 import decode from 'jwt-decode';
-import { query as queryUsers, queryCurrent, queryMenus } from '../services/user';
+import { query as queryUsers } from '../services/user';
 import { getMenuData } from '../common/menu';
-import request, { checkResponses } from '../utils/request';
+import request from '../utils/request';
 import { getToken } from '../utils/token';
 
 export default {
@@ -145,7 +145,7 @@ function formatMenus(menuRolesMap, wrapMenus, menu) {
 
 // 新增
 function goadd(params) {
-  return request(`api/Users`, { method: 'POST', body: { ...params } }, false);
+  return request('api/Users', { method: 'POST', body: { ...params } }, false);
 }
 
 // 修改
@@ -153,7 +153,3 @@ function goedit(params) {
   return request(`api/Users/${params.id}`, { method: 'PUT', body: { ...params } }, false);
 }
 
-// 获取账号
-function getAccount() {
-  return request('/api/UserAccounts');
-}

@@ -1,8 +1,11 @@
-import React, { PureComponent, Fragment } from 'react';
-import { Form, Row, Col, Button, Table } from 'antd';
-import styles from '../../common/base.less';
+import React, { PureComponent } from 'react';
+import { Form, Table } from 'antd';
+import PageHeaderLayout from 'layouts/PageHeaderLayout';
+import styles from './index.less';
 import TemplateCol from './templateCol';
-import PageHeaderLayout from '../../layouts/PageHeaderLayout';
+import DefaultQueryForm from './defaultQueryForm';
+import CustomQueryForm from './customQueryForm';
+import ToolBar from './toolbar';
 
 /*
   通用模板，输出一个常规的增删查改页面,具体可参考manage/user.js页面
@@ -19,12 +22,6 @@ class TemplateQueryPage extends PureComponent {
       this.handleQuery();
     }
   }
-  shouldComponentUpdate(nextProps, nextState){
-    if(this.props.model.data !== nextProps.model.data){
-      return true;
-    }
-    return false;
-  }
   // 获取默认分页信息
   getDefaultPagination = () => {
     return {
@@ -33,37 +30,6 @@ class TemplateQueryPage extends PureComponent {
         current: DEFAULT_PAGE_INDEX, // eslint-disable-line
       },
     };
-  }
-  // customQuery == false , 自动添加查询、重置以及导出（exportConfig 不为空）按钮
-  getDefaultForm = () => {
-    const { getFields, exportConfig } = this.props;
-    return (
-      <Fragment>
-        <Row gutter={24}>{getFields().map(this.wrapField)}</Row>
-        <Row>
-          <Col span={24} style={{ textAlign: 'center' }}>
-            <Button type="primary" htmlType="submit">查询</Button>
-            <Button type="default" className={styles.formButton} onClick={this.handleReset}>重置</Button>
-            {
-              exportConfig && (
-                <Button type="primary" className={styles.formButton} onClick={this.handleExport}>导出</Button>
-              )
-            }
-          </Col>
-        </Row>
-      </Fragment>
-    );
-  }
-  // 有调用方提供自行提供按钮
-  getCustomForm = () => {
-    const { getFields } = this.props;
-    return (
-      <Row>
-        {
-          getFields(this).map(this.wrapField)
-        }
-      </Row>
-    );
   }
   // 获取包裹了序号列的列组
   getWrapSeqColumns = () => {
@@ -126,17 +92,15 @@ class TemplateQueryPage extends PureComponent {
       });
     });
   }
-  // 重置
-  handleReset = () => {
-    const { form } = this.props;
-    form.resetFields();
-    this.setState(this.getDefaultPagination());
-  }
   // 页数变换处理函数
   handlePageChange = (pagination) => {
     const { query } = this.props;
     this.setState({ pagination });
-    this.triggerRequestDelegate(params => query(params));
+    this.triggerRequestDelegate(params => query({
+      ...params,
+      pageIndex: pagination.current,
+      pageSize: pagination.pageSize,
+    }));
   }
   // 查询
   handleQuery = (e) => {
@@ -144,21 +108,12 @@ class TemplateQueryPage extends PureComponent {
     const { query } = this.props;
     this.triggerRequestDelegate(params => query(params));
   }
-
-  // 为表单查询字段提供封装方法
-  wrapField = (field) => {
-    const { getFieldDecorator } = this.props.form;
-    const wrapField = {
-      ...field,
-      props: {
-        ...field.props,
-        getFieldDecorator,
-        key: field.key,
-      },
-    };
-    return wrapField;
+  // 重置
+  handleReset = () => {
+    const { form } = this.props;
+    form.resetFields();
+    this.setState(this.getDefaultPagination());
   }
-
   // 所有触发了请求的委托方法统一入口
   triggerRequestDelegate = (callback) => {
     const { form } = this.props;
@@ -174,8 +129,6 @@ class TemplateQueryPage extends PureComponent {
   }
   // 渲染
   render() {
-    console.log(this.props);
-    console.log(this.state);
     const {
       model: { data }, // 数据模型,约束位于文件夹/src/models下，需要在/src/commom/router.js注入
       columns, // 数据列组
@@ -191,6 +144,7 @@ class TemplateQueryPage extends PureComponent {
       query, // 查询方法委托
       rowKey, // 数据行key, 若不提供则使用默认rowKey="id"
       autoQuery, // 是否打开页面自动加载数据
+      exportConfig, // 用于导出excel，若该值为undefined 不显示导出按钮
       ...rest // 其他参数，用于支持antd table组件的所有参数
     } = this.props;
     const { pagination } = this.state;
@@ -217,18 +171,30 @@ class TemplateQueryPage extends PureComponent {
             className={styles.form}
           >
             {
-              !hiddenDefaultButtons ? this.getDefaultForm() : this.getCustomForm()
+              !hiddenDefaultButtons ?
+                (
+                  <DefaultQueryForm
+                    getFields={getFields}
+                    handleReset={this.handleReset}
+                    exportConfig={exportConfig}
+                    handleExport={this.handleExport}
+                    getFieldDecorator={form.getFieldDecorator}
+                  />
+                ) : (
+                  <CustomQueryForm
+                    getFields={getFields}
+                    getFieldDecorator={form.getFieldDecorator}
+                    component={this}
+                  />
+                )
             }
           </Form>
           {
             getTools && (
-              <div className={styles.tools}>
-                <Row>
-                  {
-                    getTools(this)
-                  }
-                </Row>
-              </div>
+              <ToolBar
+                component={this}
+                getTools={getTools}
+              />
             )
           }
           <Table
