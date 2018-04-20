@@ -64,8 +64,6 @@ export default class User extends PureComponent {
         name: {},
         remark: {},
       },
-      selectedRows: [],
-      selectedRowKeys: [],
       modaloption: { title: '新增' },
     };
   }
@@ -93,7 +91,7 @@ export default class User extends PureComponent {
   getTools = () => {
     return (
       <Fragment>
-        <Button type="primary" className={styles.formButton} onClick={() => this.showAdd()}>新增</Button>
+        <Button type="primary" className={styles.formButton} onClick={this.showAdd}>新增</Button>
       </Fragment>
     );
   }
@@ -121,15 +119,12 @@ export default class User extends PureComponent {
   }
   // 弹出新增
   showAdd = () => {
-    this.props.dispatch({
-      type: 'user/getAccount',
-      callback: this.showRealAdd,
-    });
+    this.showRealAdd();
   }
-  showRealAdd = (response) => {
+  showRealAdd = () => {
     this.setState({
       ...this.state,
-      modalvalue: { account: response, password: this.GetRandomPassword(), name: '', mobileNo: '', enable: 'true', roleId: '', remark: '', type: '', id: 0 },
+      modalvalue: { account: 'test', password: this.GetRandomPassword(), name: '', mobileNo: '', enable: 'true', roleId: '', remark: '', type: '', id: 0 },
       modaloption: { title: '新增' },
       modalVisible: !this.state.modalVisible,
     });

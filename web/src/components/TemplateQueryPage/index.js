@@ -178,7 +178,7 @@ class TemplateQueryPage extends PureComponent {
                     handleReset={this.handleReset}
                     exportConfig={exportConfig}
                     handleExport={this.handleExport}
-                    getFieldDecorator={form.getFieldDecorator}
+                    form={form}
                   />
                 ) : (
                   <CustomQueryForm

@@ -1,8 +1,22 @@
 import React, { PureComponent } from 'react';
+import { connect } from 'dva';
 import { Form, Modal, Input, Button } from 'antd';
 
 const { TextArea } = Input;
-@Form.create()
+@connect(({ user, loading }) => ({ // dva封装后的react-router组件,用于添加dispatch
+  user,
+  loading: loading.models.user,
+}))
+@Form.create({
+  onFieldsChange(props, changeFields) {
+    console.log('```````````````createform`````````');
+    console.log(props);
+    
+  },
+  mapPropsToFields(props) {
+
+  },
+})
 export default class CreateForm extends PureComponent {
   okHandle = () => {
     const { form, handleEdit, handleAdd } = this.props;

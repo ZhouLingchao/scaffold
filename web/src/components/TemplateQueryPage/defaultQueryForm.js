@@ -5,10 +5,10 @@ import styles from './index.less';
 // customQuery == false , 自动添加查询、重置以及导出（exportConfig 不为空）按钮
 export default class DefaultQueryForm extends PureComponent {
   render() {
-    const { getFields, exportConfig, handleExport, getFieldDecorator, handleReset } = this.props;
+    const { getFields, exportConfig, handleExport, form, handleReset } = this.props;
     return (
       <Fragment>
-        <Row gutter={24}>{getFields().map(field => wrapField(field, getFieldDecorator))}</Row>
+        <Row gutter={24}>{getFields().map(field => wrapField(field, form.getFieldDecorator))}</Row>
         <div className={styles.tools}>
           <Row>
             <Col span={24} style={{ textAlign: 'center', marginTop: '-10px' }}>
