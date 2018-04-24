@@ -3,12 +3,13 @@ import { connect } from 'dva';
 import { Form, Input, Button, message } from 'antd';
 import TemplateQueryPage from 'components/TemplateQueryPage';
 import styles from 'common/base.less';
-import CreateForm from './CreateForm';
+import EditForm from './editform';
 
 const { TCol } = TemplateQueryPage;
 
-@connect(({ user, loading }) => ({ // dva封装后的react-router组件,用于添加dispatch
+@connect(({ user, edit, loading }) => ({ // dva封装后的react-router组件,用于添加dispatch
   user,
+  edit,
   loading: loading.models.user,
 }))
 @Form.create() // antd提供的form组件，不用手动添加每个Form.Item的state onChange控制问题
@@ -21,7 +22,7 @@ export default class User extends PureComponent {
         title: '操作',
         dataIndex: 'option',
         render: (value, row) => {
-          return (<a onClick={() => { this.showEdit(row); }} >[编辑]</a>);
+          return (<a onClick={() => { this.showEdit(row); }} >编辑</a>);
         },
       },
       {
@@ -131,14 +132,18 @@ export default class User extends PureComponent {
   }
   // 弹出编辑框修改
   showEdit = (row) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'edit/save',
+      payload: {
+        account: {
+          value: '12',
+        },
+      },
+    });
     // 显示编辑框
     // 编辑框赋值
     this.setState({
-      modalvalue: {
-        ...row,
-        roleId: `${row.roleId}`,
-        type: `${row.type}`,
-      },
       modaloption: { title: '修改' },
       modalVisible: !this.state.modalVisible,
     });
@@ -222,7 +227,7 @@ export default class User extends PureComponent {
           title="用户管理"
           scroll={{ x: 900 }}
         />
-        <CreateForm
+        <EditForm
           {...parentMethods}
           modalVisible={modalVisible}
           modalvalue={modalvalue}

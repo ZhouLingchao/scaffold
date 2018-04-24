@@ -1,23 +1,36 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import { Form, Modal, Input, Button } from 'antd';
+import StateSelect from 'components/Select/state';
 
 const { TextArea } = Input;
-@connect(({ user, loading }) => ({ // dva封装后的react-router组件,用于添加dispatch
-  user,
-  loading: loading.models.user,
-}))
+
+@connect(({ edit }) => ({ edit }))
 @Form.create({
   onFieldsChange(props, changeFields) {
-    console.log('```````````````createform`````````');
+    const { dispatch } = props;
+    console.log('`````````````editform``````````````');
     console.log(props);
-    
+    console.log(changeFields);
+
+    dispatch({
+      type: 'edit/save',
+      payload: changeFields,
+    });
   },
   mapPropsToFields(props) {
-
+    return {
+      account: Form.createFormField({
+        ...props.edit.account,
+        value: props.edit.account.value,
+      }),
+      state: Form.createFormField({
+        value: '0',
+      }),
+    };
   },
 })
-export default class CreateForm extends PureComponent {
+export default class EditForm extends PureComponent {
   okHandle = () => {
     const { form, handleEdit, handleAdd } = this.props;
     form.validateFields((err, fieldsValue) => {
@@ -38,6 +51,9 @@ export default class CreateForm extends PureComponent {
   render() {
     const { modalVisible, form, handleModalVisible, title, modalvalue } = this.props;
     const FormItem = Form.Item;
+    const requiredOption = {
+      rules: [{ required: true }],
+    };
     return (
       <Modal
         title={title}
@@ -48,10 +64,7 @@ export default class CreateForm extends PureComponent {
       >
         <Form>
           <FormItem style={{ display: 'none' }} >
-            {form.getFieldDecorator('id', {
-              rules: [{ required: true }],
-              initialValue: modalvalue.id,
-            })(
+            {form.getFieldDecorator('id', requiredOption)(
               <Input placeholder="id" type="hidden" />
             )}
           </FormItem>
@@ -60,10 +73,7 @@ export default class CreateForm extends PureComponent {
             wrapperCol={{ span: 15 }}
             label="账号"
           >
-            {form.getFieldDecorator('account', {
-              rules: [{ required: true }],
-              initialValue: modalvalue.account,
-            })(
+            {form.getFieldDecorator('account', requiredOption)(
               <Input disabled placeholder="请输入" />
             )}
           </FormItem>
@@ -72,9 +82,7 @@ export default class CreateForm extends PureComponent {
             wrapperCol={{ span: 15 }}
             label="密码"
           >
-            {form.getFieldDecorator('password', {
-              initialValue: modalvalue.password,
-            })(
+            {form.getFieldDecorator('password')(
               <Input disabled setfieldsvalue={modalvalue.password} placeholder="不重置则不更改密码" />
             )}
             <Button onClick={this.resetPassword}>重置密码</Button>
@@ -84,10 +92,7 @@ export default class CreateForm extends PureComponent {
             wrapperCol={{ span: 15 }}
             label="姓名"
           >
-            {form.getFieldDecorator('name', {
-              rules: [{ required: true }],
-              initialValue: modalvalue.name,
-            })(
+            {form.getFieldDecorator('name', requiredOption)(
               <Input placeholder="请输入" />
             )}
           </FormItem>
@@ -96,10 +101,7 @@ export default class CreateForm extends PureComponent {
             wrapperCol={{ span: 15 }}
             label="电话"
           >
-            {form.getFieldDecorator('mobileNo', {
-              rules: [{ required: true }],
-              initialValue: modalvalue.mobileNo,
-            })(
+            {form.getFieldDecorator('mobileNo', requiredOption)(
               <Input placeholder="请输入" />
             )}
           </FormItem>
@@ -108,12 +110,16 @@ export default class CreateForm extends PureComponent {
             wrapperCol={{ span: 15 }}
             label="备注"
           >
-            {form.getFieldDecorator('remark', {
-              rules: [{ required: true }],
-              initialValue: modalvalue.remark,
-            })(
+            {form.getFieldDecorator('remark', requiredOption)(
               <TextArea placeholder="备注" rows={4} />
             )}
+          </FormItem>
+          <FormItem>
+            {
+              form.getFieldDecorator('state')(
+                <StateSelect />
+              )
+            }
           </FormItem>
         </Form>
       </Modal>
