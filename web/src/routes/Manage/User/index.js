@@ -2,6 +2,7 @@ import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import { Form, Input, Button, message } from 'antd';
 import TemplateQueryPage from 'components/TemplateQueryPage';
+import StateSelect from 'components/Select/state';
 import styles from 'common/base.less';
 import EditForm from './editform';
 
@@ -56,6 +57,7 @@ export default class User extends PureComponent {
       },
     ];
 
+
     this.state = {
       modalVisible: false,
       modalvalue: {
@@ -88,6 +90,77 @@ export default class User extends PureComponent {
     return children;
   }
 
+  // 获取编辑表单 , form参数必须由EditForm组件传递，否则参数无法赋值
+  getEditForm = (form) => {
+    const FormItem = Form.Item;
+    const requiredOption = {
+      rules: [{ required: true }],
+    };
+    const { TextArea } = Input;
+    return (
+      <Form>
+        <FormItem style={{ display: 'none' }} >
+          {form.getFieldDecorator('id', requiredOption)(
+            <Input placeholder="id" type="hidden" />
+          )}
+        </FormItem>
+        <FormItem
+          labelCol={{ span: 5 }}
+          wrapperCol={{ span: 15 }}
+          label="账号"
+        >
+          {form.getFieldDecorator('account', requiredOption)(
+            <Input disabled placeholder="请输入" />
+          )}
+        </FormItem>
+        <FormItem
+          labelCol={{ span: 5 }}
+          wrapperCol={{ span: 15 }}
+          label="密码"
+        >
+          {form.getFieldDecorator('password')(
+            <Input disabled placeholder="不重置则不更改密码" />
+          )}
+          <Button onClick={this.resetPassword}>重置密码</Button>
+        </FormItem>
+        <FormItem
+          labelCol={{ span: 5 }}
+          wrapperCol={{ span: 15 }}
+          label="姓名"
+        >
+          {form.getFieldDecorator('name', requiredOption)(
+            <Input placeholder="请输入" />
+          )}
+        </FormItem>
+        <FormItem
+          labelCol={{ span: 5 }}
+          wrapperCol={{ span: 15 }}
+          label="电话"
+        >
+          {form.getFieldDecorator('mobileNo', requiredOption)(
+            <Input placeholder="请输入" />
+          )}
+        </FormItem>
+        <FormItem
+          labelCol={{ span: 5 }}
+          wrapperCol={{ span: 15 }}
+          label="备注"
+        >
+          {form.getFieldDecorator('remark', requiredOption)(
+            <TextArea placeholder="备注" rows={4} />
+          )}
+        </FormItem>
+        <FormItem>
+          {
+            form.getFieldDecorator('state')(
+              <StateSelect />
+            )
+          }
+        </FormItem>
+      </Form>
+    );
+  }
+
   // 获取工具列按钮
   getTools = () => {
     return (
@@ -118,6 +191,13 @@ export default class User extends PureComponent {
     }
     return password;
   }
+  // 重置密码
+  resetPassword = () => {
+    const { GetRandomPassword } = this.props;
+    this.props.form.setFieldsValue({
+      password: GetRandomPassword(),
+    });
+  }
   // 弹出新增
   showAdd = () => {
     this.showRealAdd();
@@ -133,19 +213,19 @@ export default class User extends PureComponent {
   // 弹出编辑框修改
   showEdit = (row) => {
     const { dispatch } = this.props;
+    const data = {};
+    Object.keys(row).forEach((key) => {
+      data[key] = {
+        value: row[key],
+      };
+    });
     dispatch({
       type: 'edit/save',
       payload: {
-        account: {
-          value: '12',
-        },
+        data,
+        title: '修改',
+        visible: true,
       },
-    });
-    // 显示编辑框
-    // 编辑框赋值
-    this.setState({
-      modaloption: { title: '修改' },
-      modalVisible: !this.state.modalVisible,
     });
   }
   // 新增方法
@@ -199,20 +279,12 @@ export default class User extends PureComponent {
     });
   }
   // 更新查询字段
-  updateSearchFileds = (fileds) => {
-    this.searchFields = fileds;
+  updateSearchFileds = (fields) => {
+    this.searchFields = fields;
   }
   // 渲染
   render() {
-    const { modaloption, modalVisible, modalvalue } = this.state;
     const { user, form, loading } = this.props;
-    const parentMethods = {
-      handleAdd: this.handleAdd,
-      handleModalVisible: this.handleModalVisible,
-      handleEdit: this.handleEdit,
-      title: modaloption.title,
-      GetRandomPassword: this.GetRandomPassword,
-    };
     return (
       <Fragment>
         <TemplateQueryPage
@@ -228,10 +300,8 @@ export default class User extends PureComponent {
           scroll={{ x: 900 }}
         />
         <EditForm
-          {...parentMethods}
-          modalVisible={modalVisible}
-          modalvalue={modalvalue}
           onChange={this.handleFormChange}
+          getEditForm={this.getEditForm}
         />
       </Fragment>
     );

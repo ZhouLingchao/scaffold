@@ -3,9 +3,9 @@ export default {
   namespace: 'edit',
 
   state: {
-    account: {
-      value: 'test',
-    },
+    title: '',
+    visible: false,
+    data: {},
   },
 
   reducers: {
@@ -13,6 +13,27 @@ export default {
       return {
         ...state,
         ...action.payload,
+      };
+    },
+    saveData(state, action) {
+      return {
+        ...state,
+        data: {
+          ...state.data,
+          ...action.payload,
+        },
+      };
+    },
+    toggleVisible(state) {
+      return {
+        ...state,
+        visible: !state.visible,
+      };
+    },
+    saveTitle(state, action) {
+      return {
+        ...state,
+        title: action.payload,
       };
     },
   },
