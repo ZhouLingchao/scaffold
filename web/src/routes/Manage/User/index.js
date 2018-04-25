@@ -1,17 +1,19 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import { Form, Input, Button, message } from 'antd';
-import TemplateQueryPage from 'components/TemplateQueryPage';
-import StateSelect from 'components/Select/state';
+import TemplateQueryPage from 'components/Template/templateQueryPage';
+import EditForm from 'components/Template/editform';
+import AccountStatusSelect from 'components/Select/accountStatus';
+import RoleSelect from 'components/Select/role';
 import styles from 'common/base.less';
-import EditForm from './editform';
 
 const { TCol } = TemplateQueryPage;
-
+const FormItem = Form.Item;
 @connect(({ user, edit, loading }) => ({ // dva封装后的react-router组件,用于添加dispatch
   user,
   edit,
-  loading: loading.models.user,
+  loading: loading.effects['user/fetch'],
+  saveLoading: loading.effects['user/create'] || loading.effects['user/update'],
 }))
 @Form.create() // antd提供的form组件，不用手动添加每个Form.Item的state onChange控制问题
 export default class User extends PureComponent {
@@ -27,48 +29,30 @@ export default class User extends PureComponent {
         },
       },
       {
-        title: '客服账号',
-        dataIndex: 'account',
+        title: '用户账号',
+        dataIndex: 'code',
       },
       {
-        title: '客服姓名',
-        dataIndex: 'name',
+        title: '真实姓名',
+        dataIndex: 'realName',
       },
       {
-        title: '电话',
-        dataIndex: 'mobileNo',
+        title: '手机号',
+        dataIndex: 'mobile',
+      },
+      {
+        title: '邮箱',
+        dataIndex: 'eMail',
+      },
+      {
+        title: '账号状态',
+        dataIndex: 'accountStatus',
       },
       {
         title: '权限组',
         dataIndex: 'roleName',
       },
-      {
-        title: '状态',
-        dataIndex: 'enable',
-        render: val => (val === true ? '启用' : '禁用'),
-      },
-      {
-        title: '备注',
-        dataIndex: 'remark',
-      },
-      {
-        title: '添加人',
-        dataIndex: 'creator',
-      },
     ];
-
-
-    this.state = {
-      modalVisible: false,
-      modalvalue: {
-        id: {
-          value: 0,
-        },
-        name: {},
-        remark: {},
-      },
-      modaloption: { title: '新增' },
-    };
   }
 
   // 获取form的查询项
@@ -92,70 +76,85 @@ export default class User extends PureComponent {
 
   // 获取编辑表单 , form参数必须由EditForm组件传递，否则参数无法赋值
   getEditForm = (form) => {
-    const FormItem = Form.Item;
+    const { edit: { data } } = this.props;
+    const isEdit = data.id && data.id.value > 0;
     const requiredOption = {
       rules: [{ required: true }],
     };
-    const { TextArea } = Input;
+    const colOption = {
+      labelCol: { span: 5 },
+      wrapperCol: { span: 15 },
+    };
     return (
       <Form>
         <FormItem style={{ display: 'none' }} >
-          {form.getFieldDecorator('id', requiredOption)(
+          {form.getFieldDecorator('id')(
             <Input placeholder="id" type="hidden" />
           )}
         </FormItem>
         <FormItem
-          labelCol={{ span: 5 }}
-          wrapperCol={{ span: 15 }}
-          label="账号"
+          {...colOption}
+          label="用户账号"
         >
-          {form.getFieldDecorator('account', requiredOption)(
-            <Input disabled placeholder="请输入" />
+          {form.getFieldDecorator('code', requiredOption)(
+            <Input disabled={isEdit} placeholder="请输入" />
           )}
         </FormItem>
+        {!isEdit && (
+          <FormItem
+            {...colOption}
+            label="密码"
+          >
+            {form.getFieldDecorator('password', requiredOption)(
+              <Input placeholder="请输入" type="password" />
+            )}
+          </FormItem>
+        )}
         <FormItem
-          labelCol={{ span: 5 }}
-          wrapperCol={{ span: 15 }}
-          label="密码"
+          {...colOption}
+          label="真实姓名"
         >
-          {form.getFieldDecorator('password')(
-            <Input disabled placeholder="不重置则不更改密码" />
-          )}
-          <Button onClick={this.resetPassword}>重置密码</Button>
-        </FormItem>
-        <FormItem
-          labelCol={{ span: 5 }}
-          wrapperCol={{ span: 15 }}
-          label="姓名"
-        >
-          {form.getFieldDecorator('name', requiredOption)(
+          {form.getFieldDecorator('realName', requiredOption)(
             <Input placeholder="请输入" />
           )}
         </FormItem>
         <FormItem
-          labelCol={{ span: 5 }}
-          wrapperCol={{ span: 15 }}
-          label="电话"
+          {...colOption}
+          label="手机号"
         >
-          {form.getFieldDecorator('mobileNo', requiredOption)(
+          {form.getFieldDecorator('mobile', {
+            rules: [{
+              required: true, message: '请输入手机号！',
+            }, {
+              pattern: /^1\d{10}$/, message: '手机号格式错误！',
+            }],
+          })(
             <Input placeholder="请输入" />
           )}
         </FormItem>
         <FormItem
-          labelCol={{ span: 5 }}
-          wrapperCol={{ span: 15 }}
-          label="备注"
+          {...colOption}
+          label="邮箱"
         >
-          {form.getFieldDecorator('remark', requiredOption)(
-            <TextArea placeholder="备注" rows={4} />
+          {form.getFieldDecorator('eMail')(
+            <Input placeholder="请输入" />
           )}
         </FormItem>
-        <FormItem>
-          {
-            form.getFieldDecorator('state')(
-              <StateSelect />
-            )
-          }
+        <FormItem
+          {...colOption}
+          label="账号状态"
+        >
+          {form.getFieldDecorator('accountStatus', requiredOption)(
+            <AccountStatusSelect />
+          )}
+        </FormItem>
+        <FormItem
+          {...colOption}
+          label="权限组"
+        >
+          {form.getFieldDecorator('roleId', requiredOption)(
+            <RoleSelect />
+          )}
         </FormItem>
       </Form>
     );
@@ -169,45 +168,29 @@ export default class User extends PureComponent {
       </Fragment>
     );
   }
-  handleModalVisible = (flag) => {
-    this.setState({
-      modalVisible: !!flag,
-    });
+  // 设置查询方法
+  setRequery = (query) => {
+    this.requery = query;
   }
   // 封装查询
   query = (params) => {
-    this.updateSearchFileds(params);
     const { dispatch } = this.props;
     dispatch({
       type: 'user/fetch',
       payload: params,
     });
   }
-  GetRandomPassword = () => {
-    const s = '1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-    let password = '';
-    for (let i = 0; i < 8; i += 1) {
-      password += s[Math.floor(Math.random() * s.length)];
-    }
-    return password;
-  }
-  // 重置密码
-  resetPassword = () => {
-    const { GetRandomPassword } = this.props;
-    this.props.form.setFieldsValue({
-      password: GetRandomPassword(),
-    });
-  }
+
   // 弹出新增
   showAdd = () => {
-    this.showRealAdd();
-  }
-  showRealAdd = () => {
-    this.setState({
-      ...this.state,
-      modalvalue: { account: 'test', password: this.GetRandomPassword(), name: '', mobileNo: '', enable: 'true', roleId: '', remark: '', type: '', id: 0 },
-      modaloption: { title: '新增' },
-      modalVisible: !this.state.modalVisible,
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'edit/save',
+      payload: {
+        data: {},
+        title: '新增',
+        visible: true,
+      },
     });
   }
   // 弹出编辑框修改
@@ -230,78 +213,77 @@ export default class User extends PureComponent {
   }
   // 新增方法
   handleAdd = (fields) => {
-    this.props.dispatch({
-      type: 'user/Add',
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'user/create',
       payload: {
         ...fields,
       },
       callback: () => {
         message.success('添加成功');
-        this.query(this.searchFields);
-        this.setState({
-          modalVisible: false,
+        dispatch({
+          type: 'edit/toggleVisible',
         });
+        this.requery();
       },
     });
   }
   // 编辑方法
   handleEdit = (fields) => {
+    const { dispatch } = this.props;
     // 提交到后端
-    this.props.dispatch({
-      type: 'user/Edit',
+    dispatch({
+      type: 'user/update',
       payload: {
         ...fields,
       },
       callback: () => {
         message.success('保存成功');
-        this.query(this.searchFields);
-        this.setState({
-          modalVisible: false,
+        dispatch({
+          type: 'edit/toggleVisible',
         });
+        this.requery();
       },
     });
   }
-  handleFormChange = (changedFields) => {
-    this.setState({
-      modalvalue: { ...this.state.modalvalue, ...changedFields },
-    });
-  }
+
+
   // 禁用启用
   toggleStatus = (rows) => {
     const { dispatch } = this.props;
     dispatch({
       type: rows.enable ? 'user/disableUser' : 'user/enableUser',
-      payload: { Id: rows.id, enableType: rows.enable ? 2 : 1 },
+      payload: { id: rows.id, enableType: rows.enable ? 2 : 1 },
       callback: () => {
         message.success('操作成功');
-        this.query(this.searchFields);
+        this.requery();
       },
     });
   }
-  // 更新查询字段
-  updateSearchFileds = (fields) => {
-    this.searchFields = fields;
-  }
+
   // 渲染
   render() {
-    const { user, form, loading } = this.props;
+    const { user, form, loading, saveLoading } = this.props;
     return (
       <Fragment>
         <TemplateQueryPage
           loading={loading}
           form={form}
-          autoQuery
           model={user}
+          autoQuery
           query={this.query}
           getFields={this.getFields}
           getTools={this.getTools}
           columns={this.columns}
           title="用户管理"
+          setRequery={this.setRequery}
           scroll={{ x: 900 }}
         />
         <EditForm
-          onChange={this.handleFormChange}
+          loading={saveLoading}
           getEditForm={this.getEditForm}
+          handleAdd={this.handleAdd}
+          handleEdit={this.handleEdit}
         />
       </Fragment>
     );

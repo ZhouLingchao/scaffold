@@ -43,12 +43,13 @@ const proxy = {
     for (let i = 0; i < 10; i++) {
       rows.push({
         id: i,
-        name: `name${(params.pageIndex || 1 - 1) * (params.pageSize || 10) + i}`,
-        enable: true,
+        code: `000${i}`,
+        realName: `name${(params.pageIndex || 1 - 1) * (params.pageSize || 10) + i}`,
         roleName: '所有权限',
-        remark: '备注',
-        account: 'account',
-        mobileNo: '13777349985',
+        roleId: '1',
+        eMail: '522548789@qq.com',
+        mobile: '13777349985',
+        accountStatus: '正常',
       });
     }
     return res.json({
@@ -58,6 +59,12 @@ const proxy = {
         rows,
       }
     });
+  },
+  'POST /api/users':{
+    code: 200,
+  },
+  'PUT /api/users':{
+    code: 200,
   },
   'GET /api/project/notice': getNotice,
   'GET /api/activities': getActivities,

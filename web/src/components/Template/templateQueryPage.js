@@ -18,8 +18,14 @@ class TemplateQueryPage extends PureComponent {
   }
   // 页面加载完成理解查询
   componentDidMount() {
-    if (this.props.autoQuery) {
+    const { autoQuery, setRequery } = this.props;
+    // 初始化查询
+    if (autoQuery) {
       this.handleQuery();
+    }
+    // 将查询方法赋值给父组件
+    if (setRequery) {
+      setRequery(this.handleQuery);
     }
   }
   // 获取默认分页信息
@@ -145,6 +151,7 @@ class TemplateQueryPage extends PureComponent {
       rowKey, // 数据行key, 若不提供则使用默认rowKey="id"
       autoQuery, // 是否打开页面自动加载数据
       exportConfig, // 用于导出excel，若该值为undefined 不显示导出按钮
+      setRequery, // 将查询方法赋值给父组件
       ...rest // 其他参数，用于支持antd table组件的所有参数
     } = this.props;
     const { pagination } = this.state;

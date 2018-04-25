@@ -42,7 +42,11 @@ namespace Api.Models.User
         /// <summary>
         /// 密码
         /// </summary>
-        [Required,StringLength(64)]
+        [Required, StringLength(64)]
         public string Password { get; set; }
+        /// <summary>
+        /// 角色ID
+        /// </summary>
+        public long RoleId { get; set; }
     }
 }

@@ -16,22 +16,22 @@ namespace Infrastructure.Constants.Enums
         /// <summary>
         /// 正常
         /// </summary>
-        Normal = 10,
+        正常 = 10,
         /// <summary>
         /// 冻结
         /// </summary>
-        Fozen = 20,
+        冻结 = 20,
         /// <summary>
         /// 审核中
         /// </summary>
-        Verifying = 21,
+        审核中 = 21,
         /// <summary>
         /// 删除
         /// </summary>
-        Deleted = 30,
+        删除 = 30,
         /// <summary>
         /// 黑名单
         /// </summary>
-        Blacklist = 31
+        黑名单 = 31
     }
 }

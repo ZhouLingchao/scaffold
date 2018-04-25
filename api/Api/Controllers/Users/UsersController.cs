@@ -1,6 +1,7 @@
 ﻿using Api.Models.User;
 using AutoMapper;
 using Db;
+using Db.Entities.Users;
 using Infrastructure.Constants.Enums;
 using Infrastructure.Core;
 using Infrastructure.Infrastructure;
@@ -9,6 +10,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -40,7 +42,7 @@ namespace Api.Controllers.Users
         [HttpGet]
         public async Task<IActionResult> Get([FromQuery]UsersViewModel model)
         {
-            var body = from user in _db.User.Where(x => x.AccountStatus < EAccountStatus.Deleted)
+            var body = from user in _db.User.Where(x => x.AccountStatus < EAccountStatus.删除)
                        select new
                        {
                            user.Id,
@@ -58,11 +60,15 @@ namespace Api.Controllers.Users
         [HttpPost]
         public async Task<IActionResult> Post([FromBody]UserCreateViewModel model)
         {
-            if (await _db.User.AnyAsync(x => x.Mobile == model.Mobile)) throw new MessageException("账号已经存在");
+            if (await _db.User.AnyAsync(x => x.Mobile == model.Mobile )) throw new MessageException("账号已经存在");
             var securitySeed = Guid.NewGuid().ToString();
-            var entity = Mapper.Map<UserCreateViewModel, Db.Entities.Users.User>(model);
+            var entity = Mapper.Map<UserCreateViewModel, User>(model);
             entity.SecuritySeed = securitySeed;
             entity.Password = _cipher.Encrypt(model.Password, securitySeed);
+            entity.UserRoleRel = new List<UserRoleRel>() { new UserRoleRel{
+                Role = _db.Role.First(x=>x.Id == model.RoleId),
+                User = entity,
+            } };
             _db.Add(entity);
             await _db.SaveChangesAsync();
             return Json(entity);
@@ -89,7 +95,7 @@ namespace Api.Controllers.Users
         {
             var entity = await _db.User.FirstOrDefaultAsync(x => x.Id == Id);
             if (null == entity) throw new MessageException("账号不存在");
-            entity.AccountStatus = EAccountStatus.Deleted;
+            entity.AccountStatus = EAccountStatus.删除;
             await _db.SaveChangesAsync();
         }
     }

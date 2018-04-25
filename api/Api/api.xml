@@ -182,6 +182,11 @@
             密码
             </summary>
         </member>
+        <member name="P:Api.Models.User.UserCreateViewModel.RoleId">
+            <summary>
+            角色ID
+            </summary>
+        </member>
         <member name="T:Api.Models.User.UsersViewModel">
             <summary>
             用户列表

@@ -45,7 +45,7 @@ namespace Api.Controllers.Users
         {
             var user = await _db.User.FirstOrDefaultAsync(x => x.Code == model.Account);
             if (null == user) throw new MessageException("账号不存在");
-            if ((int)user.AccountStatus >= (int)EAccountStatus.Fozen) throw new MessageException("账号状态异常，无法使用");
+            if ((int)user.AccountStatus >= (int)EAccountStatus.冻结) throw new MessageException("账号状态异常，无法使用");
             if (user.Password != _cipher.Encrypt(model.Password, user.SecuritySeed)) throw new MessageException("账号密码错误");
             return CreateJwtToken(user).ToFormatJson();
         }

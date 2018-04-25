@@ -6,6 +6,7 @@ export default {
     title: '',
     visible: false,
     data: {},
+    loading: false,
   },
 
   reducers: {
@@ -28,6 +29,12 @@ export default {
       return {
         ...state,
         visible: !state.visible,
+      };
+    },
+    toggleLoading(state) {
+      return {
+        ...state,
+        loading: !state.loading,
       };
     },
     saveTitle(state, action) {

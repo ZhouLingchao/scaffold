@@ -50,6 +50,7 @@ export default class EditForm extends PureComponent {
       },
       getEditForm,
       form,
+      loading,
     } = this.props;
 
     return (
@@ -58,6 +59,8 @@ export default class EditForm extends PureComponent {
         visible={visible}
         onOk={this.okHandle}
         onCancel={this.handleModalVisible}
+        maskClosable={false}
+        confirmLoading={loading}
       >
         {getEditForm(form)}
       </Modal>

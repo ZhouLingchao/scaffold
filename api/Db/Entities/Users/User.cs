@@ -53,7 +53,7 @@ namespace Db.Entities.Users
         /// 账号状态
         /// </summary>
         [Required]
-        public EAccountStatus AccountStatus { get; set; } = EAccountStatus.Normal;
+        public EAccountStatus AccountStatus { get; set; } = EAccountStatus.正常;
         /// <summary>
         /// 按逻辑用户表不允许直接删除
         /// 增加此外键以防万一
