@@ -1,4 +1,4 @@
-﻿using Infrastructure.Constants.Enums;
+﻿using Infrastructrue.Constants.Enums;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -11,9 +11,10 @@ namespace Infrastructure.Mvc
     public class ResponseJsonModel
     {
         /// <summary>
-        /// 返回code
+        /// 返回code 
+        /// <see cref="EResponseCode"/>
         /// </summary>
-        public EResponseCode Code { get; set; } = EResponseCode.Success;
+        public int Code { get; set; } = (int)EResponseCode.Success;
         /// <summary>
         /// 信息
         /// </summary>

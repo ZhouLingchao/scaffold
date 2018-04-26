@@ -66,6 +66,16 @@ const proxy = {
   'PUT /api/users':{
     code: 200,
   },
+  'GET /api/enums':{
+    code:200,
+    data:[{
+      value:200,
+      text:'正常',
+    },{
+      value:500,
+      text:'异常',
+    }],
+  },
   'GET /api/project/notice': getNotice,
   'GET /api/activities': getActivities,
   'GET /api/rule': getRule,

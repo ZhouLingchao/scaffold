@@ -1,6 +1,6 @@
 ﻿using Api.Controllers.Users;
 using Api.Models.User;
-using Infrastructure.Constants.Enums;
+using Infrastructrue.Constants.Enums;
 using Infrastructure.Infrastructure;
 using Infrastructure.Pager;
 using Microsoft.Extensions.Options;

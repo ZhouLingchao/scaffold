@@ -2,7 +2,7 @@
 using AutoMapper;
 using Db;
 using Db.Entities.Users;
-using Infrastructure.Constants.Enums;
+using Infrastructrue.Constants.Enums;
 using Infrastructure.Core;
 using Infrastructure.Infrastructure;
 using Infrastructure.Pager;
@@ -54,7 +54,7 @@ namespace Api.Controllers.Users
                            user.Gender
                        };
             var data = await _pager.GetPagedListAsync( body.OrderBy(x => x.Id),model);
-            return Json(data);
+            return data.ToFormatJson();
         }
 
         [HttpPost]
@@ -71,7 +71,7 @@ namespace Api.Controllers.Users
             } };
             _db.Add(entity);
             await _db.SaveChangesAsync();
-            return Json(entity);
+            return entity.ToFormatJson();
         }
 
         [HttpPut]

@@ -39,6 +39,11 @@
             实例名称
             </summary>
         </member>
+        <member name="T:Api.Controllers.Common.EnumsController">
+            <summary>
+            通用获取后台枚举接口,保证前后台枚举数据同步
+            </summary>
+        </member>
         <member name="T:Api.Controllers.EnvController">
             <summary>
             默认帮助控制器，暂时只提供程序名称，环境变量
@@ -164,7 +169,7 @@
         </member>
         <member name="P:Api.Models.User.UserCreateViewModel.Gender">
             <summary>
-            性别 <seealso cref="T:Infrastructure.Constants.Enums.EGender"/>
+            性别 <seealso cref="T:Infrastructrue.Constants.Enums.EGender"/>
             </summary>
         </member>
         <member name="P:Api.Models.User.UserCreateViewModel.Mobile">

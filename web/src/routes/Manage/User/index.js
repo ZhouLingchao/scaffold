@@ -3,7 +3,7 @@ import { connect } from 'dva';
 import { Form, Input, Button, message } from 'antd';
 import TemplateQueryPage from 'components/Template/templateQueryPage';
 import EditForm from 'components/Template/editform';
-import AccountStatusSelect from 'components/Select/accountStatus';
+import EnumTemplateSelect from 'components/Select/enumTemplateSelect';
 import RoleSelect from 'components/Select/role';
 import styles from 'common/base.less';
 
@@ -96,7 +96,13 @@ export default class User extends PureComponent {
           {...colOption}
           label="用户账号"
         >
-          {form.getFieldDecorator('code', requiredOption)(
+          {form.getFieldDecorator('code', {
+            rules: [{
+              required: true, message: '请输入账号',
+            }, {
+              pattern: /^[0-9]{4,8}$/, message: '账号只支持4-8位数字',
+            }],
+          })(
             <Input disabled={isEdit} placeholder="请输入" />
           )}
         </FormItem>
@@ -105,7 +111,15 @@ export default class User extends PureComponent {
             {...colOption}
             label="密码"
           >
-            {form.getFieldDecorator('password', requiredOption)(
+            {form.getFieldDecorator('password', {
+              rules: [{
+                required: true, message: '请输入密码',
+              }, {
+                pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[\s\S]{6,20}$/, message: '密码支持6-20位，必须包含数字、字母大小写',
+              }
+
+              ]
+            })(
               <Input placeholder="请输入" type="password" />
             )}
           </FormItem>
@@ -124,9 +138,9 @@ export default class User extends PureComponent {
         >
           {form.getFieldDecorator('mobile', {
             rules: [{
-              required: true, message: '请输入手机号！',
+              required: true, message: '请输入手机号',
             }, {
-              pattern: /^1\d{10}$/, message: '手机号格式错误！',
+              pattern: /^1\d{10}$/, message: '手机号格式错误',
             }],
           })(
             <Input placeholder="请输入" />
@@ -136,7 +150,11 @@ export default class User extends PureComponent {
           {...colOption}
           label="邮箱"
         >
-          {form.getFieldDecorator('eMail')(
+          {form.getFieldDecorator('eMail', {
+            rules: [{
+              pattern: /^[a-z\d]+(\.[a-z\d]+)*@([\da-z](-[\da-z])?)+(\.{1,2}[a-z]+)+$/, message: '邮箱格式错误',
+            }],
+          })(
             <Input placeholder="请输入" />
           )}
         </FormItem>
@@ -145,7 +163,7 @@ export default class User extends PureComponent {
           label="账号状态"
         >
           {form.getFieldDecorator('accountStatus', requiredOption)(
-            <AccountStatusSelect />
+            <EnumTemplateSelect name="EAccountStatus" />
           )}
         </FormItem>
         <FormItem
@@ -213,32 +231,23 @@ export default class User extends PureComponent {
   }
   // 新增方法
   handleAdd = (fields) => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'user/create',
-      payload: {
-        ...fields,
-      },
-      callback: () => {
-        message.success('添加成功');
-        dispatch({
-          type: 'edit/toggleVisible',
-        });
-        this.requery();
-      },
-    });
+    this.handleSave('user/create', fields, '添加成功');
   }
   // 编辑方法
   handleEdit = (fields) => {
+    this.handleSave('user/update', fields, '保存成功');
+  }
+
+  handleSave = (type, fields, msg) => {
     const { dispatch } = this.props;
     // 提交到后端
     dispatch({
-      type: 'user/update',
+      type,
       payload: {
         ...fields,
       },
       callback: () => {
-        message.success('保存成功');
+        message.success(msg);
         dispatch({
           type: 'edit/toggleVisible',
         });
@@ -246,21 +255,6 @@ export default class User extends PureComponent {
       },
     });
   }
-
-
-  // 禁用启用
-  toggleStatus = (rows) => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: rows.enable ? 'user/disableUser' : 'user/enableUser',
-      payload: { id: rows.id, enableType: rows.enable ? 2 : 1 },
-      callback: () => {
-        message.success('操作成功');
-        this.requery();
-      },
-    });
-  }
-
   // 渲染
   render() {
     const { user, form, loading, saveLoading } = this.props;

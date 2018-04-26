@@ -92,7 +92,6 @@ namespace Api
         public void Configure(IApplicationBuilder app, ILoggerFactory logger)
         {
             app.UseCors(builder => builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod().AllowCredentials());
-            app.UserResponseProcess();
             app.UseCustomExceptionHandler();
             if (HostingEnvironment.IsDevelopment())
             {

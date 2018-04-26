@@ -2,7 +2,7 @@
 using Api.Models.User;
 using Db;
 using Db.Entities.Users;
-using Infrastructure.Constants.Enums;
+using Infrastructrue.Constants.Enums;
 using Infrastructure.Core;
 using Infrastructure.Infrastructure;
 using Infrastructure.Jwt;

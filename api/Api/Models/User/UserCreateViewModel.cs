@@ -1,4 +1,4 @@
-﻿using Infrastructure.Constants.Enums;
+﻿using Infrastructrue.Constants.Enums;
 using Infrastructure.Oo;
 using System;
 using System.ComponentModel.DataAnnotations;

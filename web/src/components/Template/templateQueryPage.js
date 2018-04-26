@@ -1,11 +1,13 @@
 import React, { PureComponent } from 'react';
 import { Form, Table } from 'antd';
+import PropTypes from 'prop-types';
 import PageHeaderLayout from 'layouts/PageHeaderLayout';
 import styles from './index.less';
 import TemplateCol from './templateCol';
 import DefaultQueryForm from './defaultQueryForm';
 import CustomQueryForm from './customQueryForm';
 import ToolBar from './toolbar';
+
 
 /*
   通用模板，输出一个常规的增删查改页面,具体可参考manage/user.js页面
@@ -136,23 +138,8 @@ class TemplateQueryPage extends PureComponent {
   // 渲染
   render() {
     const {
-      model: { data }, // 数据模型,约束位于文件夹/src/models下，需要在/src/commom/router.js注入
-      columns, // 数据列组
-      hiddenDefaultButtons, // 是否隐藏默认的查询、导出
-      getFields, // 查询表单方法委托, 提供 this 参数
-      // 提供TemplateCol模板,可省略FormItem,getFieldDecorator等，相当于简写版本
-      // *此模板较简单，若查询表单情况复杂，可使用antd示例代码自行编写代码
-      // api
-      //   增加options={startDateOption}，为getFieldDecorator方法第二个参数
-      title, // "浏览日志" 面包屑下方法标题
-      getTools, // 工具栏方法, 提供 this 参数
-      form, // antd注入的用于处理表单的对象，无需添加至table组件
-      query, // 查询方法委托
-      rowKey, // 数据行key, 若不提供则使用默认rowKey="id"
-      autoQuery, // 是否打开页面自动加载数据
-      exportConfig, // 用于导出excel，若该值为undefined 不显示导出按钮
-      setRequery, // 将查询方法赋值给父组件
-      ...rest // 其他参数，用于支持antd table组件的所有参数
+      model: { data }, columns, hiddenDefaultButtons,
+      getFields, title, getTools, form, exportConfig, ...rest
     } = this.props;
     const { pagination } = this.state;
     const wrapTotalPagination = {
@@ -163,7 +150,6 @@ class TemplateQueryPage extends PureComponent {
     };
     const wrapProps = {
       ...rest,
-      rowKey: rest.rowKey ? rest.rowKey : 'id',
       dataSource: data.rows, // 数据源
       columns: this.getWrapSeqColumns(),
       pagination: wrapTotalPagination,
@@ -190,7 +176,7 @@ class TemplateQueryPage extends PureComponent {
                 ) : (
                   <CustomQueryForm
                     getFields={getFields}
-                    getFieldDecorator={form.getFieldDecorator}
+                    form={form}
                     component={this}
                   />
                 )
@@ -216,3 +202,31 @@ class TemplateQueryPage extends PureComponent {
 TemplateQueryPage.TCol = TemplateCol;
 
 export default TemplateQueryPage;
+
+TemplateQueryPage.propTypes = {
+  model: PropTypes.object.isRequired, // 数据模型,约束位于文件夹/src/models下，需要在/src/commom/router.js注入
+  // model 拥有包含的属性示例 model:{ data：{ total:10, rows:[{id:1},{id:2}]}}
+  columns: PropTypes.array.isRequired, // 数据列组
+  hiddenDefaultButtons: PropTypes.bool, // 是否隐藏默认的查询、导出
+  getFields: PropTypes.func.isRequired, // 查询表单方法委托, 提供 this 参数
+  // 提供TemplateCol模板,可省略FormItem,getFieldDecorator等，相当于简写版本
+  // *此模板较简单，若查询表单情况复杂，可使用antd示例代码自行编写代码
+  // api
+  //   增加options={startDateOption}，为getFieldDecorator方法第二个参数
+  title: PropTypes.string.isRequired, // "浏览日志" 面包屑下方法标题
+  getTools: PropTypes.func, // 工具栏方法, 提供 this 参数
+  form: PropTypes.object.isRequired, // antd注入的用于处理表单的对象，无需添加至table组件
+  query: PropTypes.func.isRequired, // 查询方法委托
+  rowKey: PropTypes.string, // 数据行key, 若不提供则使用默认rowKey="id"
+  autoQuery: PropTypes.bool, // 是否打开页面自动加载数据
+  exportConfig: PropTypes.object, // 用于导出excel，若该值为undefined 不显示导出按钮
+  setRequery: PropTypes.func, // 将查询方法赋值给父组件
+};
+TemplateQueryPage.defaultProps = {
+  hiddenDefaultButtons: false,
+  getTools: undefined,
+  rowKey: 'id',
+  autoQuery: false,
+  exportConfig: undefined,
+  setRequery: undefined,
+};

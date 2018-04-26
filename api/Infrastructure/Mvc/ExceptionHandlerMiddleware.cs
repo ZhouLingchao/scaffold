@@ -1,4 +1,4 @@
-﻿using Infrastructure.Constants.Enums;
+﻿using Infrastructrue.Constants.Enums;
 using Infrastructure.Core;
 using Infrastructure.Mvc;
 using Infrastrucure.Mvc;
@@ -55,7 +55,7 @@ namespace Infrastrucure.Mvc
                     context.Response.Headers.Add("Content-Type", "application/json");
                     await context.Response.WriteAsync(JsonConvert.SerializeObject(new ResponseJsonModel
                     {
-                        Code = EResponseCode.Error,
+                        Code = (int)EResponseCode.Error,
                         Message = message
                     }));
                 }

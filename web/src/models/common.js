@@ -5,7 +5,8 @@ export default {
   namespace: 'common',
 
   state: {
-    data: [],
+    data: {},
+    enums: {},
   },
 
   effects: {
@@ -15,6 +16,16 @@ export default {
         type: 'save',
         payload: response,
         url: required.url,
+      });
+    },
+    *fetchEnums({ payload }, { call, put }) {
+      const response = yield call(() => request(`/enums?${stringify(payload)}`));
+      yield put({
+        type: 'saveEnums',
+        payload: {
+          data: response.data,
+          key: payload.name,
+        },
       });
     },
   },
@@ -29,6 +40,16 @@ export default {
       return {
         ...state,
         data,
+      };
+    },
+    saveEnums(state, action) {
+      const { payload } = action;
+      return {
+        ...state,
+        enums: {
+          ...state.enums,
+          [payload.key]: payload.data,
+        },
       };
     },
   },
