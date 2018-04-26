@@ -34,6 +34,6 @@ export default class EnumTemplateSelect extends PureComponent {
 }
 
 EnumTemplateSelect.propTypes = {
-  // 必须是有效的枚举名称
-  name: PropTypes.string.isRequired,
+  name: PropTypes.string.isRequired, // 必须是有效的枚举名称
 };
+

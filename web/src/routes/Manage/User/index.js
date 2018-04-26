@@ -116,9 +116,7 @@ export default class User extends PureComponent {
                 required: true, message: '请输入密码',
               }, {
                 pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[\s\S]{6,20}$/, message: '密码支持6-20位，必须包含数字、字母大小写',
-              }
-
-              ]
+              }],
             })(
               <Input placeholder="请输入" type="password" />
             )}
