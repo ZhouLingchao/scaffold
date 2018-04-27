@@ -43,6 +43,7 @@ namespace UnitTest.Controllers
                 var controller = new UsersController(db, new PagerService(option), new AesCipherService());
                 await controller.Post(model);
                 Assert.Equal(1, db.User.Count());
+                Assert.Equal(1, db.UserRoleRel.First().UserId);
             }
         }
     }

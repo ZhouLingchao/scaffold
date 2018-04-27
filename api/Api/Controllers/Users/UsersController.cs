@@ -53,24 +53,25 @@ namespace Api.Controllers.Users
                            user.AccountStatus,
                            user.Gender
                        };
-            var data = await _pager.GetPagedListAsync( body.OrderBy(x => x.Id),model);
+            var data = await _pager.GetPagedListAsync(body.OrderBy(x => x.Id), model);
             return data.ToFormatJson();
         }
 
         [HttpPost]
         public async Task<IActionResult> Post([FromBody]UserCreateViewModel model)
         {
-            if (await _db.User.AnyAsync(x => x.Mobile == model.Mobile )) throw new MessageException("账号已经存在");
+            if (await _db.User.AnyAsync(x => x.Mobile == model.Mobile)) throw new MessageException("账号已经存在");
             var securitySeed = Guid.NewGuid().ToString();
             var entity = Mapper.Map<UserCreateViewModel, User>(model);
             entity.SecuritySeed = securitySeed;
             entity.Password = _cipher.Encrypt(model.Password, securitySeed);
             entity.UserRoleRel = new List<UserRoleRel>() { new UserRoleRel{
-                Role = _db.Role.First(x=>x.Id == model.RoleId),
-                User = entity,
-            } };
+                    RoleId = model.RoleId,
+                    UserId = entity.Id,
+                } };
             _db.Add(entity);
             await _db.SaveChangesAsync();
+
             return entity.ToFormatJson();
         }
 
@@ -83,7 +84,7 @@ namespace Api.Controllers.Users
             entity.Password = _cipher.Encrypt(model.Password, entity.SecuritySeed);
             await _db.SaveChangesAsync();
         }
-        
+
         /// <summary>
         /// 删除用户，逻辑删除
         /// </summary>

@@ -67,7 +67,7 @@ namespace Api.Controllers.Users
             {
                 model.Functions.ToList().ForEach(x => roleFunctions.Add(new RoleFunctions
                 {
-                    Role = entity,
+                    RoleId = entity.Id,
                     FunctionCode = x
                 }));
             }

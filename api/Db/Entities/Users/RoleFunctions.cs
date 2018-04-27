@@ -13,7 +13,7 @@ namespace Db.Entities.Users
     /// </summary>
     public class RoleFunctions:PrimaryKey
     {
-        public Role Role { get; set; }
+        public long RoleId { get; set; }
         /// <summary>
         /// 角色拥有的功能点编码
         /// </summary>

@@ -27,34 +27,41 @@ namespace Microsoft.AspNetCore.Hosting
     {
         public static void Seed(IServiceProvider services)
         {
-            var context = services.GetService<ApiDbContext>();
+            var db = services.GetService<ApiDbContext>();
             var cipher = services.GetService<ICipherService>();
-            if (!context.User.Any())
+            using (var trans = db.Database.BeginTransaction())
             {
-                var guid = Guid.NewGuid().ToString();
-
-                var user = new User
+                if (!db.User.Any())
                 {
-                    Code = "admin",
-                    RealName = "超级管理员",
-                    SecuritySeed = guid,
-                    Password = cipher.Encrypt("admin", guid)
-                };
-                var role = new Role
-                {
-                    Name = "所有权限"
-                };
+                    var guid = Guid.NewGuid().ToString();
 
-                var roleFunc = new List<RoleFunctions>
-                {
-                    new RoleFunctions{ Role = role,FunctionCode = "manage/role"},
-                    new RoleFunctions{ Role = role,FunctionCode = "manage/user"}
-                };
-                var userRole = new UserRoleRel{ Role = role,User = user};
+                    var user = new User
+                    {
+                        Code = "admin",
+                        RealName = "超级管理员",
+                        SecuritySeed = guid,
+                        Password = cipher.Encrypt("admin", guid)
+                    };
+                    db.Add(user);
+                    db.SaveChanges();
+                    var role = new Role
+                    {
+                        Name = "所有权限"
+                    };
+                    db.Add(role);
+                    db.SaveChanges();
+                    var roleFunc = new List<RoleFunctions>
+                    {
+                        new RoleFunctions{ RoleId = role.Id,FunctionCode = "manage/role"},
+                        new RoleFunctions{ RoleId =  role.Id,FunctionCode = "manage/user"}
+                    };
+                    var userRole = new UserRoleRel { RoleId = role.Id, UserId = user.Id };
 
-                context.AddRange(roleFunc);
-                context.Add(userRole);
-                context.SaveChanges();
+                    db.AddRange(roleFunc);
+                    db.Add(userRole);
+                    db.SaveChanges();
+                }
+                trans.Commit();
             }
         }
     }
