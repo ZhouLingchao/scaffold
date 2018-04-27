@@ -76,6 +76,13 @@ const proxy = {
       text:'异常',
     }],
   },
+  'GET /api/roles':{
+    code:200,
+    data:[{
+      id:1,
+      name:'所有权限',
+    }]
+  },
   'GET /api/project/notice': getNotice,
   'GET /api/activities': getActivities,
   'GET /api/rule': getRule,

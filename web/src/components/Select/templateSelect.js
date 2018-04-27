@@ -1,8 +1,8 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import PropTypes from 'prop-types';
-import { EnumTemplateSelect } from './enumTemplateSelect';
-import { UrlTemplateSelect } from './defaultTemplateSelect';
+import EnumTemplateSelect from './enumTemplateSelect';
+import UrlTemplateSelect from './urlTemplateSelect';
 
 @connect(({ common }) => ({ // dva封装后的react-router组件,用于添加dispatch
   common,

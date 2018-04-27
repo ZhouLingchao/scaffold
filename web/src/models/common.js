@@ -32,10 +32,11 @@ export default {
 
   reducers: {
     save(state, action) {
+      const { payload } = action;
       const type = getType(action.url);
       const data = {
         ...state.data,
-        [type]: action.payload,
+        [type]: payload.data,
       };
       return {
         ...state,

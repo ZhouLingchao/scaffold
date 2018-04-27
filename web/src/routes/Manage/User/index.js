@@ -3,8 +3,7 @@ import { connect } from 'dva';
 import { Form, Input, Button, message } from 'antd';
 import TemplateQueryPage from 'components/Template/templateQueryPage';
 import EditForm from 'components/Template/editform';
-import EnumTemplateSelect from 'components/Select/enumTemplateSelect';
-import RoleSelect from 'components/Select/role';
+import TemplateSelect from 'components/Select/templateSelect';
 import styles from 'common/base.less';
 
 const { TCol } = TemplateQueryPage;
@@ -161,7 +160,7 @@ export default class User extends PureComponent {
           label="账号状态"
         >
           {form.getFieldDecorator('accountStatus', requiredOption)(
-            <EnumTemplateSelect name="EAccountStatus" />
+            <TemplateSelect type="EAccountStatus" isEnum />
           )}
         </FormItem>
         <FormItem
@@ -169,7 +168,7 @@ export default class User extends PureComponent {
           label="权限组"
         >
           {form.getFieldDecorator('roleId', requiredOption)(
-            <RoleSelect />
+            <TemplateSelect type="roles" />
           )}
         </FormItem>
       </Form>
