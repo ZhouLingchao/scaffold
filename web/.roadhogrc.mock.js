@@ -83,6 +83,13 @@ const proxy = {
       name:'所有权限',
     }]
   },
+  'GET /api/roleFunctions':{
+    code:200,
+    data:[
+      'manage/user',
+      'manage/role',
+    ],
+  },
   'GET /api/project/notice': getNotice,
   'GET /api/activities': getActivities,
   'GET /api/rule': getRule,

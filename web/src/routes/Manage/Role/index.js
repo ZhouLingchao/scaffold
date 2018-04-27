@@ -7,9 +7,11 @@ import { formatToTreeNode } from 'utils/tree';
 import styles from 'common/base.less';
 import CreateForm from './CreateForm';
 
+const menus = getMenuData().map(formatToTreeNode);
 @connect(({ role, loading }) => ({ // dva封装后的react-router组件,用于添加dispatch
   role,
-  rolesLoading: loading.effects['role/fetchRoles'],
+  loading: loading.effects['role/fetch'],
+  authLoading: loading.effects['role/fetchAuths'],
 }))
 @Form.create()
 export default class Role extends PureComponent {
@@ -18,25 +20,22 @@ export default class Role extends PureComponent {
     this.state = {
       modalVisible: false,
       selectedRowKey: '',
-      loading: false,
     };
+    this.columns = [
+      {
+        title: '角色名',
+        dataIndex: 'name',
+      },
+    ];
   }
   componentDidMount() {
     this.query();
-  }
-  getColumns = () => {
-    return [
-      {
-        title: '角色名',
-        dataIndex: 'roleName',
-      },
-    ];
   }
   handleAdd = (fieldsValue, authorities) => {
     this.toggleLoading();
     const { dispatch } = this.props;
     dispatch({
-      type: 'role/createRole',
+      type: 'role/create',
       payload: {
         ...fieldsValue,
         paths: authorities,
@@ -52,23 +51,18 @@ export default class Role extends PureComponent {
   handleCheck = (checkedKeys) => {
     const { dispatch } = this.props;
     dispatch({
-      type: 'role/saveAuthorities',
+      type: 'role/saveAuths',
       payload: checkedKeys,
     });
   }
   // 点击角色时触发
   handleChange = (record, selected) => {
-    this.setState({
-      selectedRowKey: selected[0].id,
-      loading: true,
-    });
     const { dispatch } = this.props;
     dispatch({
-      type: 'role/fetchAuthorities',
+      type: 'role/fetchAuths',
       payload: {
-        roleId: selected[0].id,
+        selectedRowId: selected[0].id,
       },
-      callback: this.toggleLoading,
     });
   }
   handleModalVisible = () => {
@@ -85,7 +79,7 @@ export default class Role extends PureComponent {
     this.toggleLoading();
     const { role: { data: { authorities } }, dispatch } = this.props;
     dispatch({
-      type: 'role/updateRole',
+      type: 'role/update',
       payload: {
         roleId: this.state.selectedRowKey,
         paths: authorities,
@@ -99,7 +93,7 @@ export default class Role extends PureComponent {
   query = () => {
     const { dispatch } = this.props;
     dispatch({
-      type: 'role/fetchRoles',
+      type: 'role/fetch',
     });
   }
   toggleLoading = () => {
@@ -108,50 +102,48 @@ export default class Role extends PureComponent {
     });
   }
   render() {
-    const { role: { data: { roles, authorities } }, rolesLoading } = this.props;
+    const { role: { roles, auths }, loading, authLoading } = this.props;
     return (
       <PageHeaderLayout title="角色设置">
-        <Spin spinning={this.state.loading}>
-          <div className={styles.content}>
-            <Row style={{ marginTop: 20 }}>
-              <Col md={6} xs={24} push={1}>
-                <Button onClick={this.handleModalVisible} type="primary" style={{ marginBottom: 20 }}>新增</Button>
-                <Table
-                  bordered
-                  columns={this.getColumns()}
-                  dataSource={roles}
-                  loading={rolesLoading}
-                  rowSelection={{
-                    fixed: true,
-                    type: 'radio',
-                    hideDefaultSelections: true,
-                    onChange: this.handleChange,
-                  }}
-                  pagination={false}
-                  rowKey="id"
-                />
-              </Col>
+        <div className={styles.content}>
+          <Row style={{ marginTop: 20 }}>
+            <Col md={6} xs={24} push={1}>
+              <Button onClick={this.handleModalVisible} type="primary" style={{ marginBottom: 20 }}>新增</Button>
+              <Table
+                bordered
+                columns={this.columns}
+                dataSource={roles}
+                loading={loading}
+                rowSelection={{
+                  fixed: true,
+                  type: 'radio',
+                  hideDefaultSelections: true,
+                  onChange: this.handleChange,
+                }}
+                pagination={false}
+                rowKey="id"
+              />
+            </Col>
+            <Spin spinning={!!authLoading} >
               <Col md={14} xs={24} push={2}>
                 <Button onClick={this.handleSave} type="primary" style={{ marginBottom: 20 }}>保存</Button>
                 <Tree
                   checkable
                   defaultExpandAll
-                  checkedKeys={authorities}
+                  checkedKeys={auths}
                   onCheck={this.handleCheck}
                 >
-                  {
-                    getMenuData().map(formatToTreeNode)
-                  }
+                  {menus}
                 </Tree>
               </Col>
-            </Row>
-          </div>
-          <CreateForm
-            modalVisible={this.state.modalVisible}
-            handleAdd={this.handleAdd}
-            handleModalVisible={this.handleModalVisible}
-          />
-        </Spin>
+            </Spin>
+          </Row>
+        </div >
+        <CreateForm
+          modalVisible={this.state.modalVisible}
+          handleAdd={this.handleAdd}
+          handleModalVisible={this.handleModalVisible}
+        />
       </PageHeaderLayout >
     );
   }

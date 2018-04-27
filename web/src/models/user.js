@@ -1,6 +1,6 @@
 import { routerRedux } from 'dva/router';
 import decode from 'jwt-decode';
-import { query as queryUsers, createUser, updateUser } from '../services/user';
+import { queryUsers, createUser, updateUser } from '../services/user';
 import { getToken } from '../utils/token';
 
 export default {
