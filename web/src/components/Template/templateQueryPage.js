@@ -50,12 +50,7 @@ class TemplateQueryPage extends PureComponent {
           return index + 1;
         },
       },
-      ...columns.map((col) => {
-        return {
-          sorter: (a, b) => (a[col.dataIndex] > b[col.dataIndex] ? 1 : -1),
-          ...col,
-        };
-      }),
+      ...columns,
     ];
     return wrapSeqColumns;
   }
