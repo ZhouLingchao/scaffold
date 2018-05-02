@@ -3,7 +3,7 @@ import dynamic from 'dva/dynamic';
 import pathToRegexp from 'path-to-regexp';
 import decode from 'jwt-decode';
 import { getMenuData } from './menu';
-import { getToken, getItem, setItem } from '../utils/token';
+import { getToken } from '../utils/token';
 
 let routerDataCache;
 
@@ -40,7 +40,7 @@ const dynamicWrapper = (app, models, component) => {
     app,
     models: () => models.filter(
       model => modelNotExisted(app, model)).map(m => import(`../models/${m}.js`)
-      ),
+    ),
     // add routerData prop
     component: () => {
       if (!routerDataCache) {
@@ -107,6 +107,9 @@ export const getRouterData = (app) => {
     },
     '/manage/role': {
       component: dynamicWrapper(app, ['role'], () => import('../routes/Manage/Role')),
+    },
+    '/chart/temperature': {
+      component: dynamicWrapper(app, [], () => import('../routes/Chart/index')),
     },
   };
   const authority = (target) => {

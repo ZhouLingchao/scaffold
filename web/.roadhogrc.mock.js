@@ -1,4 +1,5 @@
 import mockjs from 'mockjs';
+import moment from 'moment';
 import { getRule, postRule } from './mock/rule';
 import { getActivities, getNotice, getFakeList } from './mock/api';
 import { getFakeChartData } from './mock/chart';
@@ -33,7 +34,7 @@ const proxy = {
   'POST /api/tokens': {
     code: 200,
     message: '',
-    data: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIxNTZlN2RkNi1hZjQ3LTRjN2QtOTRiMy0zMzQ2ODU4NzYyZTQiLCJpc3MiOiJnd3QuYXBpIiwiaWF0IjoiMjAxOC80LzE2IDI6MTE6MjEiLCJuYmYiOjE1MjM4NDQ2ODEsImV4cCI6MTUyMzg0ODI4MSwiYXVkIjoiZ3d0LndlYiIsImF1dGgiOlsibWFuYWdlL3VzZXIiLCJtYW5hZ2Uvcm9sZSJdLCJuYW1lIjoidHl6aG91In0.vtWuWemUgIvM5BCaRQyY-o4KlKqOh-oZBB826jQeqUU',
+    data: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIxNTZlN2RkNi1hZjQ3LTRjN2QtOTRiMy0zMzQ2ODU4NzYyZTQiLCJpc3MiOiJnd3QuYXBpIiwiaWF0IjoiMjAxOC80LzE2IDI6MTE6MjEiLCJuYmYiOjE1MjM4NDQ2ODEsImV4cCI6MTUyMzg0ODI4MSwiYXVkIjoiZ3d0LndlYiIsImF1dGgiOlsibWFuYWdlL3VzZXIiLCJtYW5hZ2Uvcm9sZSIsImNoYXJ0L3RlbXBlcmF0dXJlIl0sIm5hbWUiOiJ0eXpob3UifQ.8xtGyrktM1df3KOoPzgmSEN7t6AaLb4ZqIPzzqftnhE',
   },
   // GET POST 可省略
   'GET /api/users': (req, res) => {
@@ -60,35 +61,40 @@ const proxy = {
       }
     });
   },
-  'POST /api/users':{
+  'POST /api/users': {
     code: 200,
   },
-  'PUT /api/users':{
+  'PUT /api/users': {
     code: 200,
   },
-  'GET /api/enums':{
-    code:200,
-    data:[{
-      value:200,
-      text:'正常',
-    },{
-      value:500,
-      text:'异常',
+  'GET /api/enums': {
+    code: 200,
+    data: [{
+      value: 200,
+      text: '正常',
+    }, {
+      value: 500,
+      text: '异常',
     }],
   },
-  'GET /api/roles':{
-    code:200,
-    data:[{
-      id:1,
-      name:'所有权限',
+  'GET /api/roles': {
+    code: 200,
+    data: [{
+      id: 1,
+      name: '所有权限',
     }]
   },
-  'GET /api/roleFunctions':{
-    code:200,
-    data:[
+  'GET /api/roleFunctions': {
+    code: 200,
+    data: [
       'manage/user',
       'manage/role',
+      'chart/temperature',
     ],
+  },
+  'GET /api/charts': (req, res) => {
+    const now = moment();
+    const 
   },
   'GET /api/project/notice': getNotice,
   'GET /api/activities': getActivities,
