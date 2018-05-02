@@ -94,7 +94,17 @@ const proxy = {
   },
   'GET /api/charts': (req, res) => {
     const now = moment();
-    const 
+    const data = [];
+    for (let i = 0; i < 20; i += 1) {
+      data.push({
+        time: now.add(30, 's').format('HH:mm:ss'),
+        value: 10 + (i % 2 ==0 ? i+1:i-1),
+      });
+    }
+    return res.json({
+      code: 200,
+      data,
+    });
   },
   'GET /api/project/notice': getNotice,
   'GET /api/activities': getActivities,

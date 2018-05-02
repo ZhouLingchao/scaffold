@@ -109,7 +109,7 @@ export const getRouterData = (app) => {
       component: dynamicWrapper(app, ['role'], () => import('../routes/Manage/Role')),
     },
     '/chart/temperature': {
-      component: dynamicWrapper(app, [], () => import('../routes/Chart/index')),
+      component: dynamicWrapper(app, ['chart'], () => import('../routes/Chart/index')),
     },
   };
   const authority = (target) => {
